@@ -15,7 +15,7 @@ public class ArrayTest {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println(countAvg());
+        System.out.println(receiveNumber(1,2,3,4,5));
     }
     
     public static String getTextNumber(int number)
@@ -65,5 +65,40 @@ public class ArrayTest {
         }
         avg = c/number.length;
         return avg;
+    }
+    
+    public static int countMax()
+    {
+        int[] number = {1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,5,5,5};
+        int c=number[0];
+        for(int i = 0;i <= number.length-1;i++)
+        {
+            if(number[i] > c)
+                c = number[i];
+        }
+        return c;
+    }
+    
+    public static int countMin()
+    {
+        int[] number = {1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,5,5,5};
+        int c=number[0];
+        for(int i = 0;i <= number.length-1;i++)
+        {
+            if(number[i] < c)
+                c = number[i];
+        }
+        return c;
+    }
+    
+    public static String receiveNumber(int num1,int num2,int num3,int num4,int num5)
+    {
+        int[] number = {num1,num2,num3,num4,num5};
+        String st = "";
+        for(int i = 0;i <= number.length-1;i++)
+        {
+            st += number[i] + " ";
+        }
+        return st;
     }
 }
