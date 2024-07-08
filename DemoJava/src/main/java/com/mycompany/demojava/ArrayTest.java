@@ -15,7 +15,23 @@ public class ArrayTest {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println(receiveNumber(1,2,3,4,5));
+        
+//        int[] n = countNumber();
+
+//        for(int i = 1;i <=5;i++)
+//        {
+//            System.out.println(countNumber(i));
+//        }
+//        System.out.println(receiveNumber(1,2,3,4,5));
+
+        int[] number = {1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,5,5,5};
+        int[] n = countNumber(number);
+//        showData(number);
+//        showData(n);
+        float[] f = percentOfFrequency(number);
+        showData(f);
+        System.out.println(getMax(number));
+        System.out.print(getMin(number));
     }
     
     public static String getTextNumber(int number)
@@ -40,16 +56,12 @@ public class ArrayTest {
 //        return "Unknow";
     }
     
-    public static int countNumber(int x)
+    public static int[] countNumber(int[] number)
     {
-        int[] number = {1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,5,5,5};
-        int c=0;
-        for(int i = 0;i <= number.length-1;i++)
+        int[] c = {0,0,0,0,0};
+        for(int i = 0;i < number.length;i++)
         {
-            if(number[i] == x)
-            {
-                c++;
-            }
+            c[number[i]-1]++;
         }
         return c;
     }
@@ -99,6 +111,64 @@ public class ArrayTest {
         {
             st += number[i] + " ";
         }
+        return st;
+    }
+    
+    public static void showData(float[] x)
+    {
+        for(int i = 0;i < x.length;i++)
+        {
+            System.out.print(x[i] + "  ");
+        }
+        System.out.println();
+
+    }
+    
+    public static float[] percentOfFrequency(int[] x)
+    {
+        float[] f = {0,0,0,0,0};
+        int[] c = countNumber(x);
+        for(int i = 0;i < c.length;i++)
+        {
+            f[i] = ( c[i] * 100.0f) / x.length;
+        }
+        return f;
+    }
+    
+    public static String getMax(int[] perrcent)
+    {
+        float[] c = percentOfFrequency(perrcent);
+        float m = c[0];
+        int number = 0;
+        String st = "";
+        for(int i = 0;i < c.length;i++)
+        {
+            if(c[i] > m)
+            {
+                m = c[i];
+                number = i+1;
+            }
+        }
+        st = "number = " + number + " % = " + m;
+        return st;
+    }
+    
+    public static String getMin(int[] perrcent)
+    {
+        float[] c = percentOfFrequency(perrcent);
+        float m = c[0];
+        int number = 0;
+        String st = "";
+        for(int i = 0;i < c.length;i++)
+        {
+            if(c[i] < m)
+            {
+                m = c[i];
+                number = i+1;
+            }
+                
+        }
+        st = "number = " + number + " % = " + m;
         return st;
     }
 }
