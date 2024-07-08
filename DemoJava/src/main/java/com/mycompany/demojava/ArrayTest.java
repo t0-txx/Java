@@ -165,8 +165,7 @@ public class ArrayTest {
             {
                 m = c[i];
                 number = i+1;
-            }
-                
+            }        
         }
         st = "number = " + number + " % = " + m;
         return st;
