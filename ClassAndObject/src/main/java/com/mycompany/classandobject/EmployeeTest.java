@@ -20,7 +20,7 @@ public class EmployeeTest {
         
         Employee emp[] = new Employee[5];
         
-        emp[0] = new Employee("0001","wirachai","M",20000);
+        emp[0] = new Employee("0001","one","M",20000);
         emp[1] = new Employee("0002","two","M",25000);
         emp[2] = new Employee("0003","three","F",30000);
         emp[3] = new Employee("0004","four","F",35000);
@@ -29,7 +29,16 @@ public class EmployeeTest {
         for(int i = 0;i < emp.length;i++)
         {
             emp[i].print();
-        }       
+        }
+
+        System.out.println();
+        
+        int[] riaseSalary = {5,10,15,20,25};
+        
+        for(int i = 0;i < riaseSalary.length;i++)
+        {
+            emp[i].printSalary(riaseSalary[i]);
+        }
     }
     
     public static Employee inputData()

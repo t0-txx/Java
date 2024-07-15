@@ -12,6 +12,7 @@ public class Employee {
     private String id, name;        // Encapsulation
     private String sex;
     private int salary;
+    private int riaseSalary;
     
     public Employee()               // Construtor Method
     {
@@ -68,6 +69,12 @@ public class Employee {
     
     public void print()
     {
-        System.out.println( id + " " + name + " " + sex + " " + salary);
+        System.out.println( id + " " + name + " " + sex + " " + salary + "\t" + riaseSalary);
+    }
+
+    public void printSalary(int riaseSalary)
+    {
+        this.riaseSalary = riaseSalary;
+        System.out.println( id + " " + name + " " + sex + " " + (salary + (salary * riaseSalary / 100)));
     }
 }
