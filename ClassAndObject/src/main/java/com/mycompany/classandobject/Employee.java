@@ -65,7 +65,7 @@ public class Employee {
     
     public void print()
     {
-        System.out.print( id + " " + name + " " + sex + " " + salary);
+        System.out.print( id + "\t" + name + "\t" + sex + "\t" + salary);
     }
 
     public int riaseSalary(int percent)

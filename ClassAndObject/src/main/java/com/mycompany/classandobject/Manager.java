@@ -22,6 +22,6 @@ public class Manager extends Employee { //extends (inheritance)
     public void print()
     {
         super.print();
-        System.out.print(" " + department);
+        System.out.print("\t" + department);
     }
 }

@@ -26,11 +26,9 @@ public class EmployeeTest {
         emp[3] = new Employee("0004","four","F",35000);
         emp[4] = new Manager("0005","five","M",40000,"Saies");
         
-        for(int i = 0;i < emp.length;i++)//
-        {
-            emp[i].print();
-            System.out.println();
-        }
+        
+//        show(emp);
+//        getTotalSalary(emp);
         
         int[] percent = {5,10,15,20,25};
         
@@ -40,15 +38,35 @@ public class EmployeeTest {
         }
         
         System.out.println();
-        
+        System.out.println("\t\tEmployee");
+        System.out.println("-------------------------------------------");
+        System.out.println("id\tname\tsex\tsalary\tdepartment");
+        System.out.println("-------------------------------------------\n");
+        show(emp);
+        System.out.println();
+        System.out.println("-------------------------------------------");
+        getTotalSalary(emp);
+    }
+    
+    public static void getTotalSalary(Employee[] emp)
+    {
+        int total = 0;
+        for(int i = 0;i < emp.length;i++)//
+        {
+            total = total + emp[i].getSalary();
+        }
+        System.out.println("total = "+total);
+    }
+    
+    public static void show(Employee[] emp)
+    {
         for(int i = 0;i < emp.length;i++)//
         {
             emp[i].print();
             System.out.println();
         }
-        
     }
-    
+
     public static Employee inputData()
     {
         Scanner scan = new Scanner(System.in);
