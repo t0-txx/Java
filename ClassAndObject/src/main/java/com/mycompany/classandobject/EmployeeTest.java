@@ -22,23 +22,31 @@ public class EmployeeTest {
         
         emp[0] = new Employee("0001","one","M",20000);
         emp[1] = new Employee("0002","two","M",25000);
-        emp[2] = new Employee("0003","three","F",30000);
+        emp[2] = new Manager("0003","three","F",30000,"IT");
         emp[3] = new Employee("0004","four","F",35000);
-        emp[4] = new Employee("0005","five","M",40000);
+        emp[4] = new Manager("0005","five","M",40000,"Saies");
         
-        for(int i = 0;i < emp.length;i++)
+        for(int i = 0;i < emp.length;i++)//
         {
             emp[i].print();
+            System.out.println();
         }
-
+        
+        int[] percent = {5,10,15,20,25};
+        
+        for(int i = 0;i < percent.length;i++)
+        {
+            emp[i].riaseSalary(percent[i]);
+        }
+        
         System.out.println();
         
-        int[] riaseSalary = {5,10,15,20,25};
-        
-        for(int i = 0;i < riaseSalary.length;i++)
+        for(int i = 0;i < emp.length;i++)//
         {
-            emp[i].printSalary(riaseSalary[i]);
+            emp[i].print();
+            System.out.println();
         }
+        
     }
     
     public static Employee inputData()
