@@ -115,7 +115,7 @@ public class ImageSize extends javax.swing.JFrame implements KeyListener {
     public void keyPressed(KeyEvent ke) {
         //System.out.println(ke.getKeyCode());
         if(ke.getKeyCode()==38) { //ลูกศร บน (อย่าลืมตัวแปรชื่อ ke ?)
-            if(width != 520)
+            if(width <= 580)
             {
                 width=width+10; // เปลี่ยน width ทีละ 10
                 height=height+10; // เปลี่ยน height ทีละ 10
@@ -124,7 +124,7 @@ public class ImageSize extends javax.swing.JFrame implements KeyListener {
         }
         
         if(ke.getKeyCode()==40) { //ลูกศร ล่าง (อย่าลืมตัวแปรชื่อ ke ?)
-            if(width != 50)
+            if(width >= 51)
             {
                 width=width-10; // เปลี่ยน width ทีละ 10
                 height=height-10; // เปลี่ยน height ทีละ 10

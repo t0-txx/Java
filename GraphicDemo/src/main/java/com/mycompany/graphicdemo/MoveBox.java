@@ -29,7 +29,7 @@ public class MoveBox extends javax.swing.JFrame implements KeyListener{
     public void paint(Graphics g){
          super.setSize(600, 600);
 
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.fillRect(0,0,getWidth(), getHeight());
         g.setColor(Color.PINK);
         g.fillRect(x,y,100,100);
@@ -105,7 +105,7 @@ public class MoveBox extends javax.swing.JFrame implements KeyListener{
         //System.out.println(ke.getKeyCode());
         
         if(ke.getKeyCode()==39) { //ลูกศร ขวา (อย่าลืมตัวแปรชื่อ ke ?)
-            if(x != 490)
+            if(x < 490)
             {
                 x=x+10; // เปลี่ยน x ทีละ 10
                 repaint();
@@ -113,7 +113,7 @@ public class MoveBox extends javax.swing.JFrame implements KeyListener{
         }
         
         if(ke.getKeyCode()==37) { //ลูกศร ซ้าย (อย่าลืมตัวแปรชื่อ ke ?)
-            if(x != 10)
+            if(x > 10)
             {
                 x=x-10; // เปลี่ยน x ทีละ 10
                 repaint();
@@ -121,17 +121,17 @@ public class MoveBox extends javax.swing.JFrame implements KeyListener{
         }
         
         if(ke.getKeyCode()==38) { //ลูกศร บน (อย่าลืมตัวแปรชื่อ ke ?)
-            if(y != 30)
+            if(y > 30)
             {
-                y=y-10; // เปลี่ยน x ทีละ 10
+                y=y-10; // เปลี่ยน y ทีละ 10
                 repaint();
             }
         }
         
         if(ke.getKeyCode()==40) { //ลูกศร ล่าง (อย่าลืมตัวแปรชื่อ ke ?)
-            if(y != 490)
+            if(y < 490)
             {
-                y=y+10; // เปลี่ยน x ทีละ 10
+                y=y+10; // เปลี่ยน y ทีละ 10
                 repaint();
             }
         }
