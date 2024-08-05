@@ -8,44 +8,54 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
- * @author WONG-PC
+ * @author com4936
  */
-public class ImageSize extends javax.swing.JFrame implements KeyListener {
+public class AutoShowPicture extends javax.swing.JFrame implements Runnable {
 
+    Image[] image = new Image[5];
+    int x,y,size = 400;
+    int n = 0;
+    
     /**
-     * Creates new form ImageSize
+     * Creates new form AutoShowPicture
      */
-    
-    int width = 50;
-    int height = 50;
-    
-    private Image image;
-    
-    public ImageSize() {
+    public AutoShowPicture() {
         initComponents();
-        setSize(600,610);
-        image=Toolkit.getDefaultToolkit().createImage("C:\\Users\\com4936\\Desktop\\661463035_java\\img\\images.png");
-        this.addKeyListener(this);
-    }
-    
-    public void paint(Graphics g)
-    {
-        super.setSize(600, 610);
-        
-        g.setColor(Color.WHITE);
-        g.fillRect(0,0,getWidth(), getHeight());
-        int x = (getWidth() - width) / 2;
-        int y = ((getWidth() + 30) - width) / 2;
-        
-        // 475 475
-        g.drawImage(image, x, y,width,height, this);
+        image[0]=Toolkit.getDefaultToolkit().createImage("C:\\Users\\com4936\\Desktop\\661463035_java\\img\\picture (6).jpg");
+        image[1]=Toolkit.getDefaultToolkit().createImage("C:\\Users\\com4936\\Desktop\\661463035_java\\img\\picture (2).jpg");
+        image[2]=Toolkit.getDefaultToolkit().createImage("C:\\Users\\com4936\\Desktop\\661463035_java\\img\\picture (3).jpg");
+        image[3]=Toolkit.getDefaultToolkit().createImage("C:\\Users\\com4936\\Desktop\\661463035_java\\img\\picture (4).jpg");
+        image[4]=Toolkit.getDefaultToolkit().createImage("C:\\Users\\com4936\\Desktop\\661463035_java\\img\\picture (5).jpg");
+        super.setSize(700,700);
+        x=(super.getWidth() - size)/2;
+        y=(super.getHeight() - size)/2;
+        new Thread(this).start();
     }
 
+    public void paint(Graphics g){
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, super.getWidth(), super.getHeight());
+        g.drawImage(image[n], x, y,size,size, this);
+    }
+    
+    @Override
+    public void run() {
+        while(true){
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(AutoShowPicture.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            n=(n+1)%image.length;
+            repaint();
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -56,7 +66,7 @@ public class ImageSize extends javax.swing.JFrame implements KeyListener {
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("ImageSize");
+        setTitle("AutoShowPicture");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -89,53 +99,25 @@ public class ImageSize extends javax.swing.JFrame implements KeyListener {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ImageSize.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AutoShowPicture.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ImageSize.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AutoShowPicture.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ImageSize.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AutoShowPicture.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ImageSize.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AutoShowPicture.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ImageSize().setVisible(true);
+                new AutoShowPicture().setVisible(true);
             }
         });
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
-
-    @Override
-    public void keyPressed(KeyEvent ke) {
-        //System.out.println(ke.getKeyCode());
-        if(ke.getKeyCode()==38) { //ลูกศร บน (อย่าลืมตัวแปรชื่อ ke ?)
-            if(width <= 580)
-            {
-                width=width+10; // เปลี่ยน width ทีละ 10
-                height=height+10; // เปลี่ยน height ทีละ 10
-                repaint();
-            }
-        }
-        
-        if(ke.getKeyCode()==40) { //ลูกศร ล่าง (อย่าลืมตัวแปรชื่อ ke ?)
-            if(width >= 51)
-            {
-                width=width-10; // เปลี่ยน width ทีละ 10
-                height=height-10; // เปลี่ยน height ทีละ 10
-                repaint();
-            }
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

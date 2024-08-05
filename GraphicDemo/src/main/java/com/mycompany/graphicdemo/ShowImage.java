@@ -27,7 +27,7 @@ public class ShowImage extends javax.swing.JFrame {
     {
         initComponents();
         setSize(200,200);
-        image=Toolkit.getDefaultToolkit().createImage("G:\\img\\images.png");
+        image=Toolkit.getDefaultToolkit().createImage("C:\\Users\\com4936\\Desktop\\661463035_java\\img\\images.png");
     }
     
     public void paint(Graphics g)

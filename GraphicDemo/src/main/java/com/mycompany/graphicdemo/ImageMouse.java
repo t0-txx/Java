@@ -28,7 +28,7 @@ public class ImageMouse extends javax.swing.JFrame implements MouseListener {
     public ImageMouse() {
         initComponents();
         setSize(600,600);
-        image=Toolkit.getDefaultToolkit().createImage("G:\\img\\images.png");
+        image=Toolkit.getDefaultToolkit().createImage("C:\\Users\\com4936\\Desktop\\661463035_java\\img\\images.png");
         this.addMouseListener(this);
     }
     
@@ -36,7 +36,7 @@ public class ImageMouse extends javax.swing.JFrame implements MouseListener {
     {
         super.setSize(600, 600);
         
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.fillRect(0,0,getWidth(), getHeight());
 
         g.drawImage(image, x, y,50,50, this);
