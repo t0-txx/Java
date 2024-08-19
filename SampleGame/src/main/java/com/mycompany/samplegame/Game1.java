@@ -14,6 +14,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -22,7 +24,7 @@ import javax.sound.sampled.Clip;
  *
  * @author com4936
  */
-public class Game1 extends javax.swing.JFrame implements KeyListener {
+public class Game1 extends javax.swing.JFrame implements KeyListener,Runnable {
 
     /**
      * Creates new form Game1
@@ -32,21 +34,33 @@ public class Game1 extends javax.swing.JFrame implements KeyListener {
     int y = 640;
     int x2,y2;
     int count = 0;
-    Clip clip;
+    Clip clip,clip2;
+    int red,green,blue;
+    
+    Ball[] ball = new Ball[10];
     
     public Game1() {
         initComponents();
         setSize(700,700);
-        setTitle("เกมต่างๆ");
+        setTitle("เกมเล่น ๆ");
         image =Toolkit.getDefaultToolkit().createImage("..\\picture\\picture (2).jpg");
+        new Thread(this).start();
         this.addKeyListener(this);
         createBox();
+        for(int i=0;i<ball.length;i++){
+            ball[i] = new Ball(getWidth());
+            new Thread(ball[i]).start();
+        }
+        
     }
 
     public void createBox(){
         Random random = new Random();
         x2 = random.nextInt(getWidth()-60);
         y2 = random.nextInt(getHeight()-60);
+        red = random.nextInt(255);
+        green = random.nextInt(255);
+        blue = random.nextInt(255);
         createSound();
     }
     
@@ -60,37 +74,84 @@ public class Game1 extends javax.swing.JFrame implements KeyListener {
         }catch(Exception ex){}
     }
     
+    public void win(){
+        try
+        {
+            File soundFile = new File("..\\img\\win.wav");
+            AudioInputStream adioIn = AudioSystem.getAudioInputStream(soundFile);
+            clip2 = AudioSystem.getClip();
+            clip2.open(adioIn);
+        }catch(Exception ex){}
+    }
+    
     public void paint(Graphics g){
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, super.getWidth(), super.getHeight());
         g.drawImage(image,x,y,50,50, this);
         
-        g.setColor(Color.red);
+        g.setColor(new Color(red, green, blue));
         g.fillRect(x2, y2, 50, 50);
         
         g.setColor(Color.BLACK);
         g.setFont(new Font("Angsana new", Font.BOLD, 60));
         g.drawString("score " + count ,50, 100);
         
-        if(count >= 10){
-            g.setColor(Color.GRAY);
-            g.fillRect(0, 0, super.getWidth(), super.getHeight());
+        for(int i=0;i<ball.length;i++){
+            ball[i].paint(g);
+        }
+        
+        if(count >= 100){
+//            g.setColor(Color.GRAY);
+//            g.fillRect(0, 0, super.getWidth(), super.getHeight());
             g.setColor(Color.RED);
-            g.setFont(new Font("Angsana new", Font.BOLD, 90));
-            g.drawString("THE WINNER",((super.getWidth()-350)/2), (super.getHeight()/2));
+            g.drawString("THE WINNER",((super.getWidth()-300)/2), (super.getHeight()/2));
+            win();
+            clip2.loop(0);
         }
     }
     
     public void checkCollission(){
         Rectangle rPlayer = new Rectangle(x,y,50,50);
         Rectangle rBox = new Rectangle(x2,y2,50,50);
-        if(count <10){
+        if(count <100){
             if(rPlayer.intersects(rBox)){
                 //System.out.println("Collised");
                 clip.loop(0);
                 createBox();
-                count = count+5;
+                count = count+2;
             }
+        }
+    }
+    
+    public void checkBall(){
+        
+        for(int i = 0;i<ball.length;i++){
+            Rectangle rPlayer = new Rectangle(x,y,50,50);
+            Rectangle rBall = new Rectangle(ball[i].x,ball[i].y,50,50);
+            if(rPlayer.intersects(rBall)){
+                System.out.println(y/ball[i].y);
+                count = count+(ball[i].y/getHeight());
+                Random random = new Random();
+                ball[i].y = 30;
+                ball[i].x = random.nextInt(getWidth());
+            }
+            if(ball[i].play == false){
+                ball[i] = new Ball(getWidth());
+                new Thread(ball[i]).start();
+            }
+        }
+    }
+    
+    @Override
+    public void run() {
+        while(true){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game1.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            checkBall();
+            repaint();
         }
     }
     /**
@@ -160,7 +221,7 @@ public class Game1 extends javax.swing.JFrame implements KeyListener {
     @Override
     public void keyPressed(KeyEvent ke) {
         //System.out.println(ke.getKeyCode());
-        if(count <10){
+        if(count <100){
         switch(ke.getKeyCode()){
             case 39:
                 if(x < getWidth()-60)
@@ -198,6 +259,8 @@ public class Game1 extends javax.swing.JFrame implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
     }
+
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
