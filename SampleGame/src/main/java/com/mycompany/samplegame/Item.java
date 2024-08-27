@@ -5,7 +5,6 @@
 package com.mycompany.samplegame;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Random;
 import java.util.logging.Level;
@@ -13,43 +12,33 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author com4936
+ * @author WONG-PC
  */
-public class Ball extends Thread {
-    int x,y=30;
-    int width,delay;
-    int count;
-    Color[] colorList={Color.PINK,Color.BLUE,Color.RED,Color.GREEN,Color.YELLOW};
-    Color color;
+public class Item extends Thread {
+    int x,y;
+    int width;
     Boolean play = true;
     
-    public Ball(int width){
+    public Item(int width){
         this.width = width;
         Random random = new Random();
-        x = random.nextInt(width-50);
-        int c = random.nextInt(colorList.length);
-        color = colorList[c];
-        delay = random.nextInt(480)+20;
-        count = 500/delay;
+        y = random.nextInt(width-50);
+        x = width-50;
     }
     
     public void paint(Graphics g){
-        g.setColor(color);
-        g.fillOval(x, y, 50, 50);
-        
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Angsana new", Font.BOLD, 20));
-        g.drawString("" + count ,x+20, y+30);
+        g.setColor(Color.RED);
+        g.fillRect(x, y, 50, 50);
     }
     
     public void run(){
-        while(y+10<width-50){
+        while(x-10>0){
             try {
-                Thread.sleep(delay);
+                Thread.sleep(50);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Ball.class.getName()).log(Level.SEVERE, null, ex);
             }
-            y=y+10;
+            x=x-10;
         }
         play = false;
     }
