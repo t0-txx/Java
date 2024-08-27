@@ -156,7 +156,7 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
                 new Thread(ball[i]).start();
             }
             if(bullet[bulletCheck] != null){
-                Rectangle rBullet = new Rectangle(bullet[bulletCheck].x, bullet[bulletCheck].y, 50, 50);
+                Rectangle rBullet = new Rectangle(bullet[bulletCheck].x, bullet[bulletCheck].y, 10, 30);
                 if (rBullet.intersects(rBall)) {
                     createSound();
                     clip.loop(0);
