@@ -9,12 +9,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -25,44 +27,38 @@ public class Ball extends Thread implements ImageObserver {
     int x, y = 30;
     int width, delay;
     int count;
-    Color[] colorList = {Color.PINK, Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW};
-    Color color;
-//    Image[] imageList = new Image[8];
-//    Image image;
+//    Color[] colorList = {Color.PINK, Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW};
+//    Color color;
+    BufferedImage[] imageList = new BufferedImage[8];
+    ImageIcon image;
     Boolean play = true;
     Random random = new Random();
-    
 
     public Ball(int width) {
         this.width = width;
         x = random.nextInt(width - 50);
-        int c = random.nextInt(colorList.length);
-        color = colorList[c];
-//        loadImage();
-//        int c = random.nextInt(imageList.length);
-//        image = imageList[c];
-        delay = random.nextInt(480) + 20;
+////        int c = random.nextInt(colorList.length);
+////        color = colorList[c];
+        loadImage();
+        int c = random.nextInt(imageList.length);
+        image = new ImageIcon(imageList[c]);
+        delay = random.nextInt(50,300) + 20;
         count = 500 / delay;
     }
 
-//    private void loadImage() {
-//        try {
-//            imageList[0] = ImageIO.read(new File("..\\picture\\ponit  (1).png"));
-//            imageList[1] = ImageIO.read(new File("..\\picture\\ponit  (2).png"));
-//            imageList[2] = ImageIO.read(new File("..\\picture\\ponit  (3).png"));
-//            imageList[3] = ImageIO.read(new File("..\\picture\\ponit  (4).png"));
-//            imageList[4] = ImageIO.read(new File("..\\picture\\ponit  (5).png"));
-//            imageList[5] = ImageIO.read(new File("..\\picture\\ponit  (6).png"));
-//            imageList[6] = ImageIO.read(new File("..\\picture\\ponit  (7).png"));
-//            imageList[7] = ImageIO.read(new File("..\\picture\\ponit  (8).png"));
-//        } catch (Exception ex) {
-//        }
-//    }
+    private void loadImage() {
+        try {
+            for (int i = 0; i < imageList.length; i++) {
+                imageList[i] = ImageIO.read(new File("..\\picture\\ponit  (" + (i + 1) + ").png"));
+            }
+        } catch (Exception ex) {
+        }
+    }
 
     public void paint(Graphics g) {
-        g.setColor(color);
-        g.fillOval(x, y, 50, 50);
-//        g.drawImage(image, x, y, 50, 50, this); // Draw the loaded image
+//        g.setColor(color);
+//        g.fillOval(x, y, 50, 50);
+        g.drawImage(image.getImage(), x, y,50, 50,null);
 
         g.setColor(Color.BLACK);
         g.setFont(new Font("Angsana new", Font.BOLD, 20));
@@ -70,7 +66,7 @@ public class Ball extends Thread implements ImageObserver {
     }
 
     public void run() {
-        while (y + 10 < width - 50) {
+        while (y + 10 < width ) {
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException ex) {

@@ -4,7 +4,15 @@
  */
 package com.mycompany.oopcompany;
 
+import java.awt.Font;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /**
  *
@@ -15,8 +23,44 @@ public class Item extends javax.swing.JFrame {
     /**
      * Creates new form Item
      */
+    Connection conn;
+    Statement statement;
+
     public Item() {
+        setFont();
+        connectDB();
         initComponents();
+    }
+
+    public void connectDB() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Load driver error");
+        }
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/oop2567", "root", "12345678");
+            statement = conn.createStatement();
+        } catch (SQLException ex) {
+//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("connect database error");
+        }
+    }
+
+    public void setFont() {
+        try {
+            //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            // กำหนดฟอนต์พื้นฐานสำหรับแอปพลิเคชันทั้งหมด
+            Font newFont = new Font("Tahoma", Font.PLAIN, 14);
+//            UIManager.put("Button.font", newFont);
+            UIManager.put("Label.font", newFont);
+//            UIManager.put("TextField.font", newFont);
+            UIManager.put("JOptionPane.font", newFont);
+        } catch (Exception ex) {
+        }
     }
 
     /**
@@ -41,6 +85,9 @@ public class Item extends javax.swing.JFrame {
         qty = new javax.swing.JTextField();
         amount = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
+        bInsert = new javax.swing.JButton();
+        bUpdate = new javax.swing.JButton();
+        bDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,6 +138,27 @@ public class Item extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel5.setText("เป็นเงิน");
 
+        bInsert.setText("Insert");
+        bInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bInsertActionPerformed(evt);
+            }
+        });
+
+        bUpdate.setText("Update");
+        bUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bUpdateActionPerformed(evt);
+            }
+        });
+
+        bDelete.setText("Delete");
+        bDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -102,7 +170,13 @@ public class Item extends javax.swing.JFrame {
                         .addComponent(bNew)
                         .addGap(18, 18, 18)
                         .addComponent(bShow)
-                        .addGap(42, 42, 42)
+                        .addGap(18, 18, 18)
+                        .addComponent(bInsert)
+                        .addGap(18, 18, 18)
+                        .addComponent(bUpdate)
+                        .addGap(18, 18, 18)
+                        .addComponent(bDelete)
+                        .addGap(27, 27, 27)
                         .addComponent(bClose))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -119,7 +193,7 @@ public class Item extends javax.swing.JFrame {
                                 .addComponent(amount, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(itemName, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(itemCode, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,12 +218,17 @@ public class Item extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(bNew)
-                    .addComponent(bShow)
-                    .addComponent(bClose))
-                .addGap(32, 32, 32))
+                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(bInsert)
+                        .addComponent(bUpdate)
+                        .addComponent(bDelete)
+                        .addComponent(bClose))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(bNew)
+                        .addComponent(bShow)))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
 
         pack();
@@ -170,8 +249,37 @@ public class Item extends javax.swing.JFrame {
     }//GEN-LAST:event_bShowActionPerformed
 
     private void bCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCloseActionPerformed
-        this.dispose();
+        if (JOptionPane.showConfirmDialog(this, "ปิดหรือไม่ ?", "ยืนยัน", 0) == 0) {
+            this.dispose();
+        }
     }//GEN-LAST:event_bCloseActionPerformed
+
+    private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
+        String sql = "insert into item(itemCode,itemName,typeCode,price,qty) values ('"+ itemCode.getText() +"','"+ itemName.getText() +"','01','"+ price.getText() +"','"+ qty.getText() +"')";
+        try {
+            statement.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bInsertActionPerformed
+
+    private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
+        String sql = "update item set itemName = '"+ itemName.getText() +"' , price = '"+ price.getText() +"' , qty = '"+ qty.getText() +"' where itemCode = '"+ itemCode.getText() +"'";
+        try {
+            statement.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bUpdateActionPerformed
+
+    private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
+        String sql = "delete from item where itemCode = '"+ itemCode.getText() +"'";
+        try {
+            statement.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bDeleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -211,8 +319,11 @@ public class Item extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField amount;
     private javax.swing.JButton bClose;
+    private javax.swing.JButton bDelete;
+    private javax.swing.JButton bInsert;
     private javax.swing.JButton bNew;
     private javax.swing.JButton bShow;
+    private javax.swing.JButton bUpdate;
     private javax.swing.JTextField itemCode;
     private javax.swing.JTextField itemName;
     private javax.swing.JLabel jLabel1;

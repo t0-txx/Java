@@ -5,6 +5,12 @@
 package com.mycompany.oopcompany;
 
 import java.awt.Font;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
@@ -17,19 +23,42 @@ public class Department extends javax.swing.JFrame {
     /**
      * Creates new form OPCompany
      */
+    Connection conn;
+    Statement statement;
+
     public Department() {
         setFont();
+        connectDB();
         initComponents();
+    }
+    
+    public void connectDB() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Load driver error");
+        }
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/oop2567", "root", "12345678");
+            statement = conn.createStatement();
+        } catch (SQLException ex) {
+//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("connect database error");
+        }
     }
 
     public void setFont() {
         try {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-//            UIManager.put("Label.font",  new JFrame("Font and LookAndFeel Demo"));
-//            UIManager.put("Button.font", customFont);
-//            UIManager.put("TextField.font", customFont);
-//            UIManager.put("TextArea.font", customFont);
-            UIManager.put("JOptionPane.font", new Font("Angsana new", Font.BOLD, 16));
+            //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            // กำหนดฟอนต์พื้นฐานสำหรับแอปพลิเคชันทั้งหมด
+            Font newFont = new Font("Tahoma", Font.PLAIN, 14);
+//            UIManager.put("Button.font", newFont);
+            UIManager.put("Label.font", newFont);
+//            UIManager.put("TextField.font", newFont);
+            UIManager.put("JOptionPane.font", newFont);
         } catch (Exception ex) {
         }
     }
@@ -50,6 +79,9 @@ public class Department extends javax.swing.JFrame {
         bShow = new javax.swing.JButton();
         departmentCode = new javax.swing.JTextField();
         departmentName = new javax.swing.JTextField();
+        bInsert = new javax.swing.JButton();
+        bUpdate = new javax.swing.JButton();
+        bDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,6 +117,27 @@ public class Department extends javax.swing.JFrame {
 
         departmentName.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        bInsert.setText("Insert");
+        bInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bInsertActionPerformed(evt);
+            }
+        });
+
+        bUpdate.setText("Update");
+        bUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bUpdateActionPerformed(evt);
+            }
+        });
+
+        bDelete.setText("Delete");
+        bDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -95,19 +148,27 @@ public class Department extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
-                        .addComponent(departmentCode, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(departmentCode, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(65, 65, 65))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createSequentialGroup()
                             .addComponent(jLabel2)
                             .addGap(25, 25, 25)
-                            .addComponent(departmentName, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(departmentName, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(bNew)
                             .addGap(18, 18, 18)
                             .addComponent(bShow)
+                            .addGap(18, 18, 18)
+                            .addComponent(bInsert)
+                            .addGap(18, 18, 18)
+                            .addComponent(bUpdate)
+                            .addGap(18, 18, 18)
+                            .addComponent(bDelete)
                             .addGap(42, 42, 42)
-                            .addComponent(bClose))))
-                .addGap(65, 65, 65))
+                            .addComponent(bClose)
+                            .addGap(28, 28, 28)))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -121,18 +182,25 @@ public class Department extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(departmentName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(48, 48, 48)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(bNew)
-                    .addComponent(bShow)
-                    .addComponent(bClose))
-                .addContainerGap(92, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(bInsert)
+                        .addComponent(bUpdate)
+                        .addComponent(bDelete)
+                        .addComponent(bClose))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(bNew)
+                        .addComponent(bShow)))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void bCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCloseActionPerformed
-        this.dispose();
+        if (JOptionPane.showConfirmDialog(this, "ปิดหรือไม่ ?", "ยืนยัน", 0) == 0) {
+            this.dispose();
+        }
     }//GEN-LAST:event_bCloseActionPerformed
 
     private void bNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNewActionPerformed
@@ -145,6 +213,33 @@ public class Department extends javax.swing.JFrame {
         String ms = departmentCode.getText() + "\n" + departmentName.getText();
         JOptionPane.showMessageDialog(this, ms);
     }//GEN-LAST:event_bShowActionPerformed
+
+    private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
+        String sql = "update department set departmentName = '"+ departmentName.getText() +"' where departmentCode = '"+ departmentCode.getText() +"'";
+        try {
+            statement.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bUpdateActionPerformed
+
+    private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
+        String sql = "delete from department where departmentCode = '"+ departmentCode.getText() +"'";
+        try {
+            statement.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bDeleteActionPerformed
+
+    private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
+        String sql = "insert into department(departmentCode,departmentName) values ('"+ departmentCode.getText() +"','"+ departmentName.getText() +"')";
+        try {
+            statement.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bInsertActionPerformed
 
     /**
      * @param args the command line arguments
@@ -184,8 +279,11 @@ public class Department extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bClose;
+    private javax.swing.JButton bDelete;
+    private javax.swing.JButton bInsert;
     private javax.swing.JButton bNew;
     private javax.swing.JButton bShow;
+    private javax.swing.JButton bUpdate;
     private javax.swing.JTextField departmentCode;
     private javax.swing.JTextField departmentName;
     private javax.swing.JLabel jLabel1;

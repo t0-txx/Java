@@ -33,7 +33,7 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
     int x = 10;
     int y = 640;
     int x2, y2;
-    int count = 0;
+    int count = 0, damage = 0;
     Clip clip, clip2, clip3, clip4, clip5;
     int red, green, blue;
 
@@ -43,24 +43,31 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
 
     Bullet[] bullet = new Bullet[7];
 
+    Heart heart;
+
+//    Heal heal;
     int bulletCheck;
 
     int bulletCount = bullet.length;
 
     public Game1() {
+
         initComponents();
         setSize(700, 700);
         setTitle("เกมเล่น ๆ");
         image = Toolkit.getDefaultToolkit().createImage("..\\picture\\police.png");
-        new Thread(this).start();
-        this.addKeyListener(this);
-        createBox();
         for (int i = 0; i < ball.length; i++) {
             ball[i] = new Ball(getWidth());
             new Thread(ball[i]).start();
         }
+        new Thread(this).start();
+        this.addKeyListener(this);
+        createBox();
+        heart = new Heart(damage);
+//        heal = new Heal(getWidth());
         item = new Item(getWidth());
         new Thread(item).start();
+//        new Thread(heal).start();
     }
 
     public void createBox() {
@@ -112,8 +119,8 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
         } catch (Exception ex) {
         }
     }
-    
-     public void SoundFalse() {
+
+    public void SoundFalse() {
         try {
             File soundFile = new File("..\\img\\SoundFalse.wav");
             AudioInputStream adioIn = AudioSystem.getAudioInputStream(soundFile);
@@ -128,6 +135,17 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
         g.fillRect(0, 0, super.getWidth(), super.getHeight());
         g.drawImage(image, x, y, 50, 50, this);
 
+        for (int i = 0; i < ball.length; i++) {
+            ball[i].paint(g);
+        }
+
+//        item.paint(g);
+        for (int j = 0; j < bullet.length; j++) {
+            if (bullet[j] != null) {
+                bullet[j].paint(g);
+            }
+        }
+
 //        g.setColor(new Color(red, green, blue));
 //        g.fillRect(x2, y2, 50, 50);
         g.setColor(Color.BLACK);
@@ -137,18 +155,11 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
         g.setColor(Color.RED);
         g.setFont(new Font("Angsana new", Font.BOLD, 60));
         g.drawString("Bullet " + bulletCount, 500, 100);
-        for (int i = 0; i < ball.length; i++) {
-            ball[i].paint(g);
-        }
 
-//        item.paint(g);
-        for (int i = 0; i < bullet.length; i++) {
-            if (bullet[i] != null) {
-                bullet[i].paint(g);
-            }
-        }
+        heart.paint(g);
 
-        if (count >= 50) {
+//        heal.paint(g);
+        if (count >= 1000) {
 //            g.setColor(Color.GRAY);
 //            g.fillRect(0, 0, super.getWidth(), super.getHeight());
             g.setColor(Color.GREEN);
@@ -158,7 +169,7 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
             clip2.loop(0);
         }
 
-        if (count <= -20) {
+        if (damage >= 200) {
 //            g.setColor(Color.GRAY);
 //            g.fillRect(0, 0, super.getWidth(), super.getHeight());
             g.setColor(Color.RED);
@@ -172,7 +183,7 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
     public void checkCollission() {
         Rectangle rPlayer = new Rectangle(x, y, 50, 50);
         Rectangle rBox = new Rectangle(x2, y2, 50, 50);
-        if (count < 50) {
+        if (count < 1000) {
             if (rPlayer.intersects(rBox)) {
                 //System.out.println("Collised");
                 clip.loop(0);
@@ -192,12 +203,16 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
                 count = count - (ball[i].count);
                 ball[i] = new Ball(getWidth());
                 new Thread(ball[i]).start();
+                damage = damage + 20;
+                heart = new Heart(damage);
+//                new Heal(getWidth());
             }
 
             if (ball[i].play == false) {
                 ball[i] = new Ball(getWidth());
                 new Thread(ball[i]).start();
             }
+
             for (int j = 0; j < bullet.length; j++) {
                 if (bullet[j] != null) {
                     Rectangle rBullet = new Rectangle(bullet[j].x, bullet[j].y, 40, 40);
@@ -230,7 +245,7 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
     @Override
     public void run() {
         while (true) {
-            if (count < 50 && count > -20) {
+            if (count < 1000 && damage < 200) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
@@ -242,7 +257,6 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
                 break;
             }
         }
-
     }
 
     /**
@@ -312,7 +326,7 @@ public class Game1 extends javax.swing.JFrame implements KeyListener, Runnable {
     @Override
     public void keyPressed(KeyEvent ke) {
 //        System.out.println(ke.getKeyCode());
-        if (count < 50 && count > -20) {
+        if (count < 1000 && damage < 200) {
             switch (ke.getKeyCode()) {
                 case 39:
                 case 68:
