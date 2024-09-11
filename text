@@ -1,0 +1,15 @@
+        if (evt.getKeyCode() == Event.ENTER) {
+            String sql = "select departmentName from department where departmentCode = '" + departmentCode.getText() + "'";
+            departmentName.setText(null);
+            try {
+                ResultSet rs = statement.executeQuery(sql);
+                while (rs.next()) {
+//                    departmentName.setText(rs.getString(1));
+                    departmentName.setText(rs.getString("departmentName"));
+                }
+                rs.close();
+
+            } catch (SQLException ex) {
+                departmentName.setText(null);
+            }
+        }
