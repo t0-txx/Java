@@ -4,9 +4,11 @@
  */
 package com.mycompany.oopcompany;
 
+import java.awt.Event;
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -95,6 +97,11 @@ public class Customer extends javax.swing.JFrame {
         });
 
         customerCode.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        customerCode.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                customerCodeKeyPressed(evt);
+            }
+        });
 
         customerName.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -227,7 +234,7 @@ public class Customer extends javax.swing.JFrame {
     }//GEN-LAST:event_bNewActionPerformed
 
     private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
-        String sql = "insert into customer(customerCode,customerName,address) values ('"+ customerCode.getText() +"','"+ customerName.getText() +"','"+ address.getText() +"')";
+        String sql = "insert into customer(customerCode,customerName,address) values ('" + customerCode.getText() + "','" + customerName.getText() + "','" + address.getText() + "')";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
@@ -236,7 +243,7 @@ public class Customer extends javax.swing.JFrame {
     }//GEN-LAST:event_bInsertActionPerformed
 
     private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
-        String sql = "update customer set customerName = '"+ customerName.getText() +"', address = '"+ address.getText() +"' where customerCode = '"+ customerCode.getText() +"'";
+        String sql = "update customer set customerName = '" + customerName.getText() + "', address = '" + address.getText() + "' where customerCode = '" + customerCode.getText() + "'";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
@@ -245,13 +252,33 @@ public class Customer extends javax.swing.JFrame {
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
-        String sql = "delete from customer where customerCode = '"+ customerCode.getText() +"'";
+        String sql = "delete from customer where customerCode = '" + customerCode.getText() + "'";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
             Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_bDeleteActionPerformed
+
+    private void customerCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_customerCodeKeyPressed
+        if (evt.getKeyCode() == Event.ENTER) {
+            String sql = "select customerName,	address from customer where customerCode = '" + customerCode.getText() + "'";
+            customerName.setText(null);
+            address.setText(null);
+            try {
+                ResultSet rs = statement.executeQuery(sql);
+                while (rs.next()) {
+                    customerName.setText(rs.getString("customerName"));
+                    address.setText(rs.getString("address"));
+                }
+                rs.close();
+
+            } catch (SQLException ex) {
+                customerName.setText(null);
+                address.setText(null);
+            }
+        }
+    }//GEN-LAST:event_customerCodeKeyPressed
 
     /**
      * @param args the command line arguments

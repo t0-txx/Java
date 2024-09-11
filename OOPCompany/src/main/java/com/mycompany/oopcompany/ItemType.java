@@ -4,9 +4,11 @@
  */
 package com.mycompany.oopcompany;
 
+import java.awt.Event;
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -103,6 +105,11 @@ public class ItemType extends javax.swing.JFrame {
         });
 
         typeCode.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        typeCode.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                typeCodeKeyPressed(evt);
+            }
+        });
 
         typeName.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -214,7 +221,7 @@ public class ItemType extends javax.swing.JFrame {
     }//GEN-LAST:event_bCloseActionPerformed
 
     private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
-        String sql = "insert into itemtype(typeCode,typeName) values ('"+ typeCode.getText() +"','"+ typeName.getText() +"')";
+        String sql = "insert into itemtype(typeCode,typeName) values ('" + typeCode.getText() + "','" + typeName.getText() + "')";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
@@ -223,7 +230,7 @@ public class ItemType extends javax.swing.JFrame {
     }//GEN-LAST:event_bInsertActionPerformed
 
     private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
-        String sql = "update itemtype set typeName = '"+ typeName.getText() +"' where typeCode = '"+ typeCode.getText() +"'";
+        String sql = "update itemtype set typeName = '" + typeName.getText() + "' where typeCode = '" + typeCode.getText() + "'";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
@@ -232,13 +239,31 @@ public class ItemType extends javax.swing.JFrame {
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
-        String sql = "delete from itemtype where typeCode = '"+ typeCode.getText() +"'";
+        String sql = "delete from itemtype where typeCode = '" + typeCode.getText() + "'";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
             Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_bDeleteActionPerformed
+
+    private void typeCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_typeCodeKeyPressed
+        if (evt.getKeyCode() == Event.ENTER) {
+            String sql = "select typeName from itemtype where typeCode = '" + typeCode.getText() + "'";
+            typeName.setText(null);
+            try {
+                ResultSet rs = statement.executeQuery(sql);
+                while (rs.next()) {
+//                    departmentName.setText(rs.getString(1));
+                    typeName.setText(rs.getString("typeName"));
+                }
+                rs.close();
+
+            } catch (SQLException ex) {
+                typeName.setText(null);
+            }
+        }
+    }//GEN-LAST:event_typeCodeKeyPressed
 
     /**
      * @param args the command line arguments

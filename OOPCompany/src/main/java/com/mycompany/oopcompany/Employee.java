@@ -4,14 +4,15 @@
  */
 package com.mycompany.oopcompany;
 
+import java.awt.Event;
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
@@ -27,11 +28,15 @@ public class Employee extends javax.swing.JFrame {
     Connection conn;
     Statement statement;
     String sex = "";
+    String selectedItem;
+    String departmentCode;
 
     public Employee() {
         setFont();
         connectDB();
         initComponents();
+        departmentSelect();
+        sexM.setSelected(true);
     }
 
     public void connectDB() {
@@ -87,7 +92,7 @@ public class Employee extends javax.swing.JFrame {
         department = new javax.swing.JComboBox<>();
         sexM = new javax.swing.JRadioButton();
         sexF = new javax.swing.JRadioButton();
-        sexN = new javax.swing.JRadioButton();
+        sexU = new javax.swing.JRadioButton();
         jLabel5 = new javax.swing.JLabel();
         salary = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
@@ -98,6 +103,11 @@ public class Employee extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         employeeCode.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        employeeCode.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                employeeCodeKeyPressed(evt);
+            }
+        });
 
         employeeName.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -136,7 +146,6 @@ public class Employee extends javax.swing.JFrame {
         jLabel4.setText("แผนก");
 
         department.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        department.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ผู้จัดการทั่วไป", "ผู้จัดการ", "ผู้จัดการฝ่ายขาย", "ผู้จัดการฝ่ายบุคคล" }));
 
         buttonGroup1.add(sexM);
         sexM.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -146,9 +155,9 @@ public class Employee extends javax.swing.JFrame {
         sexF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         sexF.setText("หญิง");
 
-        buttonGroup1.add(sexN);
-        sexN.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        sexN.setText("ไม่ระบุ");
+        buttonGroup1.add(sexU);
+        sexU.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        sexU.setText("ไม่ระบุ");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel5.setText("เงินเดือน");
@@ -194,7 +203,7 @@ public class Employee extends javax.swing.JFrame {
                             .addComponent(jLabel5)
                             .addComponent(jLabel3))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(employeeName, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(6, 6, 6)
@@ -202,12 +211,11 @@ public class Employee extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(sexF)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(sexN))
+                                .addComponent(sexU))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(salary)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel6)
-                                .addGap(130, 130, 130))
+                                .addComponent(salary, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel6))
                             .addComponent(department, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(employeeCode, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -241,7 +249,7 @@ public class Employee extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(sexM)
                     .addComponent(sexF)
-                    .addComponent(sexN))
+                    .addComponent(sexU))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -267,14 +275,51 @@ public class Employee extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void departmentSelect() {
+        String sql = "select departmentCode, departmentName from department order by departmentCode";
+        try {
+            // รัน SQL Query
+            ResultSet rs = statement.executeQuery(sql);
+
+            // ลูปดึงข้อมูลจาก ResultSet
+            while (rs.next()) {
+                // ดึงค่าของ departmentName
+                String departmentCode1 = rs.getString("departmentCode");
+                String departmentName = rs.getString("departmentName");
+
+                // เพิ่ม departmentName ลงใน JComboBox
+                department.addItem(departmentCode1 + " " + departmentName);
+            }
+            rs.close(); // ปิด ResultSet
+        } catch (SQLException ex) {
+            ex.printStackTrace(); // แสดงข้อผิดพลาดถ้ามีการเกิด SQLException
+        }
+    }
+
+    public void departmentCode() {
+        selectedItem = (String) department.getSelectedItem();
+        departmentCode = selectedItem.split(" ")[0];
+    }
+
     public void sexSelect() {
         if (sexM.isSelected()) {
             sex = "M";
         } else if (sexF.isSelected()) {
             sex = "F";
-        } else if (sexN.isSelected()) {
+        } else if (sexU.isSelected()) {
             sex = "U";
         }
+    }
+
+    public void bNew() {
+        employeeCode.setText(null);
+        employeeName.setText(null);
+        sexM.setSelected(true);
+        sexF.setSelected(false);
+        sexU.setSelected(false);
+        department.setSelectedIndex(0);
+        salary.setText(null);
+        employeeCode.requestFocus();
     }
 
     private void bCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCloseActionPerformed
@@ -284,14 +329,7 @@ public class Employee extends javax.swing.JFrame {
     }//GEN-LAST:event_bCloseActionPerformed
 
     private void bNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNewActionPerformed
-        employeeCode.setText(null);
-        employeeName.setText(null);
-        sexM.setSelected(true);
-        sexF.setSelected(false);
-        sexN.setSelected(false);
-        department.setSelectedIndex(0);
-        salary.setText(null);
-        employeeCode.requestFocus();
+        bNew();
     }//GEN-LAST:event_bNewActionPerformed
 
     private void bShowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bShowActionPerformed
@@ -300,8 +338,8 @@ public class Employee extends javax.swing.JFrame {
             sex1 = sexM.getText();
         } else if (sexF.isSelected()) {
             sex1 = sexF.getText();
-        } else if (sexN.isSelected()) {
-            sex1 = sexN.getText();
+        } else if (sexU.isSelected()) {
+            sex1 = sexU.getText();
         }
         String ms = employeeCode.getText() + "\n" + employeeName.getText() + "\n" + sex1 + "\n" + department.getSelectedItem() + "\n" + salary.getText();
         JOptionPane.showMessageDialog(this, ms);
@@ -309,7 +347,8 @@ public class Employee extends javax.swing.JFrame {
 
     private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
         sexSelect();
-        String sql = "insert into employee(employeeCode,employeeName,sex,departmentCode,salary) values ('" + employeeCode.getText() + "','" + employeeName.getText() + "','" + sex + "','" + department.getSelectedIndex() + 1 + "','" + salary.getText() + "')";
+        departmentCode();
+        String sql = "insert into employee(employeeCode,employeeName,sex,departmentCode,salary) values ('" + employeeCode.getText() + "','" + employeeName.getText() + "','" + sex + "','" + departmentCode + "','" + salary.getText() + "')";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
@@ -319,7 +358,8 @@ public class Employee extends javax.swing.JFrame {
 
     private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
         sexSelect();
-        String sql = "update employee set employeeName = '" + employeeName.getText() + "', sex = '" + sex + "' ,departmentCode = '" + department.getSelectedIndex() + 1 + "',salary = '" + salary.getText() + "' where employeeCode = '" + employeeCode.getText() + "'";
+        departmentCode();
+        String sql = "update employee set employeeName = '" + employeeName.getText() + "', sex = '" + sex + "' ,departmentCode = '" + departmentCode + "',salary = '" + salary.getText() + "' where employeeCode = '" + employeeCode.getText() + "'";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
@@ -328,13 +368,65 @@ public class Employee extends javax.swing.JFrame {
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
-        String sql = "delete from employee where employeeCode = '" + employeeCode.getText() + "'";
-        try {
-            statement.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        if (JOptionPane.showConfirmDialog(this, "Delete หรือไม่ ?", "ยืนยัน", 0) == 0) {
+            String sql = "delete from employee where employeeCode = '" + employeeCode.getText() + "'";
+            try {
+                statement.executeUpdate(sql);
+            } catch (SQLException ex) {
+                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            bNew();
         }
     }//GEN-LAST:event_bDeleteActionPerformed
+
+    private void employeeCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_employeeCodeKeyPressed
+        if (evt.getKeyCode() == Event.ENTER) {
+            String sql = "select employeeName,departmentCode,sex,salary from employee where employeeCode = '" + employeeCode.getText() + "'";
+            employeeName.setText(null);
+            sexM.setSelected(true);
+            sexF.setSelected(false);
+            sexU.setSelected(false);
+            department.setSelectedIndex(0);
+            salary.setText(null);
+            try {
+                ResultSet rs = statement.executeQuery(sql);
+                while (rs.next()) {
+                    employeeName.setText(rs.getString("employeeName"));
+
+                    String departmentCode1 = rs.getString("departmentCode");
+                    String departmentName = null;
+
+                    for (int i = 0; i < department.getItemCount(); i++) {
+                        String item = (String) department.getItemAt(i);
+                        if (item.startsWith(departmentCode1 + " ")) {
+                            department.setSelectedIndex(i);
+                            break;
+                        }
+                    }
+//                    JOptionPane.showMessageDialog(this, rs.getString("departmentCode"));
+
+                    String checkSex = rs.getString("sex");
+                    if ("M".equals(checkSex)) {
+                        sexM.setSelected(true);
+                    } else if ("F".equals(checkSex)) {
+                        sexF.setSelected(true);
+                    } else if ("U".equals(checkSex)) {
+                        sexU.setSelected(true);
+                    }
+//                    JOptionPane.showMessageDialog(this, checkSex);
+                    salary.setText(rs.getString("salary"));
+                }
+                rs.close();
+            } catch (SQLException ex) {
+                employeeName.setText(null);
+                sexM.setSelected(true);
+                sexF.setSelected(false);
+                sexU.setSelected(false);
+                department.setSelectedIndex(0);
+                salary.setText(null);
+            }
+        }
+    }//GEN-LAST:event_employeeCodeKeyPressed
 
     /**
      * @param args the command line arguments
@@ -391,6 +483,6 @@ public class Employee extends javax.swing.JFrame {
     private javax.swing.JTextField salary;
     private javax.swing.JRadioButton sexF;
     private javax.swing.JRadioButton sexM;
-    private javax.swing.JRadioButton sexN;
+    private javax.swing.JRadioButton sexU;
     // End of variables declaration//GEN-END:variables
 }

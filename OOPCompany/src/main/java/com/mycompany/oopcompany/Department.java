@@ -4,9 +4,11 @@
  */
 package com.mycompany.oopcompany;
 
+import java.awt.Event;
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -31,7 +33,7 @@ public class Department extends javax.swing.JFrame {
         connectDB();
         initComponents();
     }
-    
+
     public void connectDB() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -114,6 +116,11 @@ public class Department extends javax.swing.JFrame {
         });
 
         departmentCode.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        departmentCode.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                departmentCodeKeyPressed(evt);
+            }
+        });
 
         departmentName.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -215,7 +222,7 @@ public class Department extends javax.swing.JFrame {
     }//GEN-LAST:event_bShowActionPerformed
 
     private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
-        String sql = "update department set departmentName = '"+ departmentName.getText() +"' where departmentCode = '"+ departmentCode.getText() +"'";
+        String sql = "update department set departmentName = '" + departmentName.getText() + "' where departmentCode = '" + departmentCode.getText() + "'";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
@@ -224,7 +231,7 @@ public class Department extends javax.swing.JFrame {
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
-        String sql = "delete from department where departmentCode = '"+ departmentCode.getText() +"'";
+        String sql = "delete from department where departmentCode = '" + departmentCode.getText() + "'";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
@@ -233,13 +240,31 @@ public class Department extends javax.swing.JFrame {
     }//GEN-LAST:event_bDeleteActionPerformed
 
     private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
-        String sql = "insert into department(departmentCode,departmentName) values ('"+ departmentCode.getText() +"','"+ departmentName.getText() +"')";
+        String sql = "insert into department(departmentCode,departmentName) values ('" + departmentCode.getText() + "','" + departmentName.getText() + "')";
         try {
             statement.executeUpdate(sql);
         } catch (SQLException ex) {
             Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_bInsertActionPerformed
+
+    private void departmentCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_departmentCodeKeyPressed
+        if (evt.getKeyCode() == Event.ENTER) {
+            String sql = "select departmentName from department where departmentCode = '" + departmentCode.getText() + "'";
+            departmentName.setText(null);
+            try {
+                ResultSet rs = statement.executeQuery(sql);
+                while (rs.next()) {
+//                    departmentName.setText(rs.getString(1));
+                    departmentName.setText(rs.getString("departmentName"));
+                }
+                rs.close();
+
+            } catch (SQLException ex) {
+                departmentName.setText(null);
+            }
+        }
+    }//GEN-LAST:event_departmentCodeKeyPressed
 
     /**
      * @param args the command line arguments
