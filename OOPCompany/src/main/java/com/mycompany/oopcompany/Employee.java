@@ -351,8 +351,10 @@ public class Employee extends javax.swing.JFrame {
         String sql = "insert into employee(employeeCode,employeeName,sex,departmentCode,salary) values ('" + employeeCode.getText() + "','" + employeeName.getText() + "','" + sex + "','" + departmentCode + "','" + salary.getText() + "')";
         try {
             statement.executeUpdate(sql);
+            JOptionPane.showMessageDialog(this, "บันทึกสำเร็จ");
         } catch (SQLException ex) {
             Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "บันทึกไม่สำเร็จ");
         }
     }//GEN-LAST:event_bInsertActionPerformed
 
@@ -362,18 +364,22 @@ public class Employee extends javax.swing.JFrame {
         String sql = "update employee set employeeName = '" + employeeName.getText() + "', sex = '" + sex + "' ,departmentCode = '" + departmentCode + "',salary = '" + salary.getText() + "' where employeeCode = '" + employeeCode.getText() + "'";
         try {
             statement.executeUpdate(sql);
+            JOptionPane.showMessageDialog(this, "อัพเดทสำเร็จ");
         } catch (SQLException ex) {
             Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "อัพเดทไม่สำเร็จ");
         }
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
-        if (JOptionPane.showConfirmDialog(this, "Delete หรือไม่ ?", "ยืนยัน", 0) == 0) {
+        if (JOptionPane.showConfirmDialog(this, "ลบหรือไม่ ?", "ยืนยัน", 0) == 0) {
             String sql = "delete from employee where employeeCode = '" + employeeCode.getText() + "'";
             try {
                 statement.executeUpdate(sql);
+                JOptionPane.showMessageDialog(this, "ลบสำเร็จ");
             } catch (SQLException ex) {
                 Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "ลบไม่สำเร็จ");
             }
             bNew();
         }
