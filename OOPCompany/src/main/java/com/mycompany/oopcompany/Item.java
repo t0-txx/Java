@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -28,13 +29,14 @@ public class Item extends javax.swing.JFrame {
     Connection conn;
     Statement statement;
     String selectedItem;
-    String itemtypeCode;
+    String itemtypeCode, itemtypeName;
 
     public Item() {
         setFont();
         connectDB();
         initComponents();
         itemtypeSelect();
+        getItemData();
     }
 
     public void connectDB() {
@@ -95,6 +97,8 @@ public class Item extends javax.swing.JFrame {
         bDelete = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         itemType = new javax.swing.JComboBox<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        table1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -143,15 +147,15 @@ public class Item extends javax.swing.JFrame {
 
         price.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         price.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                priceKeyPressed(evt);
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                priceKeyReleased(evt);
             }
         });
 
         qty.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         qty.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                qtyKeyPressed(evt);
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                qtyKeyReleased(evt);
             }
         });
 
@@ -186,25 +190,39 @@ public class Item extends javax.swing.JFrame {
 
         itemType.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        table1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        table1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Code", "Name", "TCode", "TName", "Price", "Qty", "Amount"
+            }
+        ));
+        table1.setEnabled(false);
+        jScrollPane2.setViewportView(table1);
+        if (table1.getColumnModel().getColumnCount() > 0) {
+            table1.getColumnModel().getColumn(0).setMinWidth(50);
+            table1.getColumnModel().getColumn(0).setPreferredWidth(50);
+            table1.getColumnModel().getColumn(0).setMaxWidth(50);
+            table1.getColumnModel().getColumn(2).setMinWidth(50);
+            table1.getColumnModel().getColumn(2).setPreferredWidth(50);
+            table1.getColumnModel().getColumn(2).setMaxWidth(50);
+            table1.getColumnModel().getColumn(4).setMinWidth(75);
+            table1.getColumnModel().getColumn(4).setPreferredWidth(75);
+            table1.getColumnModel().getColumn(4).setMaxWidth(75);
+            table1.getColumnModel().getColumn(5).setMinWidth(75);
+            table1.getColumnModel().getColumn(5).setPreferredWidth(75);
+            table1.getColumnModel().getColumn(5).setMaxWidth(75);
+        }
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(59, 59, 59)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(bNew)
-                        .addGap(18, 18, 18)
-                        .addComponent(bShow)
-                        .addGap(18, 18, 18)
-                        .addComponent(bInsert)
-                        .addGap(18, 18, 18)
-                        .addComponent(bUpdate)
-                        .addGap(18, 18, 18)
-                        .addComponent(bDelete)
-                        .addGap(27, 27, 27)
-                        .addComponent(bClose))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -225,13 +243,26 @@ public class Item extends javax.swing.JFrame {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(qty, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(price, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(amount, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(51, Short.MAX_VALUE))
+                                .addComponent(amount, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(bNew)
+                        .addGap(18, 18, 18)
+                        .addComponent(bShow)
+                        .addGap(18, 18, 18)
+                        .addComponent(bInsert)
+                        .addGap(18, 18, 18)
+                        .addComponent(bUpdate)
+                        .addGap(18, 18, 18)
+                        .addComponent(bDelete)
+                        .addGap(65, 65, 65)
+                        .addComponent(bClose))
+                    .addComponent(jScrollPane2))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(48, 48, 48)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(itemCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -255,7 +286,9 @@ public class Item extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addGap(22, 22, 22)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(bInsert)
@@ -265,11 +298,45 @@ public class Item extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(bNew)
                         .addComponent(bShow)))
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    public void bNew() {
+        itemCode.setText(null);
+        itemName.setText(null);
+        itemType.setSelectedIndex(0);
+        price.setText(null);
+        qty.setText(null);
+        amount.setText(null);
+        itemCode.requestFocus();
+    }
+
+    private void getItemData() {
+        //((DefaultTableModel) table1.getModel()).setRowCount(0);
+        String sql = "select itemCode,itemName,item.typeCode,itemtype.typeName,price,qty,price*qty from item inner join itemtype on itemtype.typeCode = item.typeCode";
+        itemCode.setText(null);
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()) {
+                Object[] rowData = {rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)};
+                ((DefaultTableModel) table1.getModel()).addRow(rowData);
+            }
+            rs.close();
+        } catch (SQLException ex) {
+        }
+    }
+
+    private int searchRowIndex(String code) {
+        for (int i = 0; i < table1.getRowCount(); i++) {
+            if (code.equals(table1.getValueAt(i, 0))) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     public void calculate() {
         try {
@@ -278,6 +345,7 @@ public class Item extends javax.swing.JFrame {
             int result = (int) value1 * (int) value2; // คำนวณผลรวม
             amount.setText(String.valueOf(result));
         } catch (NumberFormatException e) {
+            amount.setText("");
         }
     }
 
@@ -305,16 +373,11 @@ public class Item extends javax.swing.JFrame {
     public void itemtypeCode() {
         selectedItem = (String) itemType.getSelectedItem();
         itemtypeCode = selectedItem.split(" ")[0];
+        itemtypeName = selectedItem.split(" ")[1];
     }
 
     private void bNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNewActionPerformed
-        itemCode.setText(null);
-        itemName.setText(null);
-        itemType.setSelectedIndex(0);
-        price.setText(null);
-        qty.setText(null);
-        amount.setText(null);
-        itemCode.requestFocus();
+        bNew();
     }//GEN-LAST:event_bNewActionPerformed
 
     private void bShowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bShowActionPerformed
@@ -329,31 +392,62 @@ public class Item extends javax.swing.JFrame {
     }//GEN-LAST:event_bCloseActionPerformed
 
     private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
-        itemtypeCode();
-        String sql = "insert into item(itemCode,itemName,typeCode,price,qty) values ('" + itemCode.getText() + "','" + itemName.getText() + "','" + itemtypeCode + "','" + price.getText() + "','" + qty.getText() + "')";
-        try {
-            statement.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        if ("".equals(itemCode.getText())) {
+            JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
+        } else {
+            itemtypeCode();
+            String sql = "insert into item(itemCode,itemName,typeCode,price,qty) values ('" + itemCode.getText() + "','" + itemName.getText() + "','" + itemtypeCode + "','" + price.getText() + "','" + qty.getText() + "')";
+            try {
+                statement.executeUpdate(sql);
+                Object[] rowData = {itemCode.getText(), itemName.getText(), itemtypeCode, itemtypeName, price.getText(), qty.getText(), amount.getText()};
+                ((DefaultTableModel) table1.getModel()).addRow(rowData);
+                JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
+            } catch (SQLException ex) {
+                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
+            }
         }
     }//GEN-LAST:event_bInsertActionPerformed
 
     private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
-        itemtypeCode();
-        String sql = "update item set itemName = '" + itemName.getText() + "', typeCode = '" + itemtypeCode + "', price = '" + price.getText() + "' , qty = '" + qty.getText() + "' where itemCode = '" + itemCode.getText() + "'";
-        try {
-            statement.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        if ("".equals(itemCode.getText())) {
+            JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
+        } else {
+            itemtypeCode();
+            String sql = "update item set itemName = '" + itemName.getText() + "', typeCode = '" + itemtypeCode + "', price = '" + price.getText() + "' , qty = '" + qty.getText() + "' where itemCode = '" + itemCode.getText() + "'";
+            int row = searchRowIndex(itemCode.getText());
+            try {
+                statement.executeUpdate(sql);
+                ((DefaultTableModel) table1.getModel()).setValueAt(itemName.getText(), row, 1);
+                ((DefaultTableModel) table1.getModel()).setValueAt(itemtypeCode, row, 2);
+                ((DefaultTableModel) table1.getModel()).setValueAt(itemtypeName, row, 3);
+                ((DefaultTableModel) table1.getModel()).setValueAt(price.getText(), row, 4);
+                ((DefaultTableModel) table1.getModel()).setValueAt(qty.getText(), row, 5);
+                ((DefaultTableModel) table1.getModel()).setValueAt(amount.getText(), row, 6);
+                JOptionPane.showMessageDialog(this, "Update สำเร็จ");
+            } catch (SQLException ex) {
+                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
+            }
         }
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
-        String sql = "delete from item where itemCode = '" + itemCode.getText() + "'";
-        try {
-            statement.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+        if (JOptionPane.showConfirmDialog(this, "ลบหรือไม่ ?", "ยืนยัน", 0) == 0) {
+            if ("".equals(itemCode.getText())) {
+                JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
+            } else {
+                String sql = "delete from item where itemCode = '" + itemCode.getText() + "'";
+                int row = searchRowIndex(itemCode.getText());
+                try {
+                    statement.executeUpdate(sql);
+                    ((DefaultTableModel) table1.getModel()).removeRow(row);
+                    JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
+                } catch (SQLException ex) {
+                    Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
+                }
+            }
         }
     }//GEN-LAST:event_bDeleteActionPerformed
 
@@ -395,13 +489,13 @@ public class Item extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_itemCodeKeyPressed
 
-    private void priceKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_priceKeyPressed
+    private void priceKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_priceKeyReleased
         calculate();
-    }//GEN-LAST:event_priceKeyPressed
+    }//GEN-LAST:event_priceKeyReleased
 
-    private void qtyKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_qtyKeyPressed
+    private void qtyKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_qtyKeyReleased
         calculate();
-    }//GEN-LAST:event_qtyKeyPressed
+    }//GEN-LAST:event_qtyKeyReleased
 
     /**
      * @param args the command line arguments
@@ -455,7 +549,9 @@ public class Item extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField price;
     private javax.swing.JTextField qty;
+    private javax.swing.JTable table1;
     // End of variables declaration//GEN-END:variables
 }

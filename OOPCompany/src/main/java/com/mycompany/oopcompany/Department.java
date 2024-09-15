@@ -89,7 +89,6 @@ public class Department extends javax.swing.JFrame {
         bDelete = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         table1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -168,13 +167,6 @@ public class Department extends javax.swing.JFrame {
             table1.getColumnModel().getColumn(0).setMaxWidth(100);
         }
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -194,8 +186,8 @@ public class Department extends javax.swing.JFrame {
                                 .addComponent(departmentName, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 432, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(bNew)
                                 .addGap(18, 18, 18)
@@ -205,14 +197,10 @@ public class Department extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(bUpdate)
                                 .addGap(18, 18, 18)
-                                .addComponent(bDelete)))
-                        .addGap(42, 42, 42)
-                        .addComponent(bClose)
+                                .addComponent(bDelete)
+                                .addGap(42, 42, 42)
+                                .addComponent(bClose)))
                         .addGap(0, 28, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(86, 86, 86))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -221,15 +209,13 @@ public class Department extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(departmentCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
-                .addComponent(jButton1)
-                .addGap(10, 10, 10)
+                .addGap(43, 43, 43)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(departmentName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(56, 56, 56)
+                .addGap(41, 41, 41)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(50, 50, 50)
+                .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(bInsert)
@@ -239,7 +225,7 @@ public class Department extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(bNew)
                         .addComponent(bShow)))
-                .addContainerGap(64, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
 
         pack();
@@ -291,44 +277,56 @@ public class Department extends javax.swing.JFrame {
     }//GEN-LAST:event_bShowActionPerformed
 
     private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
-        String sql = "update department set departmentName = '" + departmentName.getText() + "' where departmentCode = '" + departmentCode.getText() + "'";
-        try {
-            statement.executeUpdate(sql);
-            JOptionPane.showMessageDialog(this, "อัพเดทสำเร็จ");
-
-        } catch (SQLException ex) {
-            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "อัพเดทไม่สำเร็จ");
+        if ("".equals(departmentCode.getText())) {
+            JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
+        } else {
+            String sql = "update department set departmentName = '" + departmentName.getText() + "' where departmentCode = '" + departmentCode.getText() + "'";
+            int row = searchRowIndex(departmentCode.getText());
+            try {
+                statement.executeUpdate(sql);
+                ((DefaultTableModel) table1.getModel()).setValueAt(departmentName.getText(), row, 1);
+                JOptionPane.showMessageDialog(this, "Update สำเร็จ");
+            } catch (SQLException ex) {
+                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
+            }
         }
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
         if (JOptionPane.showConfirmDialog(this, "ลบหรือไม่ ?", "ยืนยัน", 0) == 0) {
-            String sql = "delete from department where departmentCode = '" + departmentCode.getText() + "'";
-            int row = searchRowIndex(departmentCode.getText());
-            JOptionPane.showMessageDialog(this, row);
-            try {
-                statement.executeUpdate(sql);
-                JOptionPane.showMessageDialog(this, "ลบสำเร็จ ");
-                ((DefaultTableModel) table1.getModel()).removeRow(row);
-            } catch (SQLException ex) {
-                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-                JOptionPane.showMessageDialog(this, "ลบไม่สำเร็จ");
+            if ("".equals(departmentCode.getText())) {
+                JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
+            } else {
+                String sql = "delete from department where departmentCode = '" + departmentCode.getText() + "'";
+                int row = searchRowIndex(departmentCode.getText());
+                try {
+                    statement.executeUpdate(sql);
+                    ((DefaultTableModel) table1.getModel()).removeRow(row);
+                    JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
+                } catch (SQLException ex) {
+                    Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
+                }
+                bNew();
             }
-            bNew();
         }
     }//GEN-LAST:event_bDeleteActionPerformed
 
     private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
-        String sql = "insert into department(departmentCode,departmentName) values ('" + departmentCode.getText() + "','" + departmentName.getText() + "')";
-        try {
-            statement.executeUpdate(sql);
-            JOptionPane.showMessageDialog(this, "บันทึกสำเร็จ");
-            Object[] rowData = {departmentCode.getText(), departmentName.getText()};
-            ((DefaultTableModel) table1.getModel()).addRow(rowData);
-        } catch (SQLException ex) {
-            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "บันทึกไม่สำเร็จ");
+        if ("".equals(departmentCode.getText())) {
+            JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
+        } else {
+            String sql = "insert into department(departmentCode,departmentName) values ('" + departmentCode.getText() + "','" + departmentName.getText() + "')";
+            try {
+                statement.executeUpdate(sql);
+                Object[] rowData = {departmentCode.getText(), departmentName.getText()};
+                ((DefaultTableModel) table1.getModel()).addRow(rowData);
+                JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
+            } catch (SQLException ex) {
+                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
+            }
         }
     }//GEN-LAST:event_bInsertActionPerformed
 
@@ -349,12 +347,6 @@ public class Department extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_departmentCodeKeyPressed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-//        String code = table1.getValueAt(0, 1).toString();
-//         JOptionPane.showMessageDialog(this, code);
-        table1.setValueAt("1", 0, 0);
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -401,7 +393,6 @@ public class Department extends javax.swing.JFrame {
     private javax.swing.JButton bUpdate;
     private javax.swing.JTextField departmentCode;
     private javax.swing.JTextField departmentName;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

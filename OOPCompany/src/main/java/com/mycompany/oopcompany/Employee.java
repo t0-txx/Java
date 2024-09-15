@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -29,7 +30,7 @@ public class Employee extends javax.swing.JFrame {
     Statement statement;
     String sex = "";
     String selectedItem;
-    String departmentCode;
+    String departmentCode, departmentName;
 
     public Employee() {
         setFont();
@@ -37,6 +38,7 @@ public class Employee extends javax.swing.JFrame {
         initComponents();
         departmentSelect();
         sexM.setSelected(true);
+        getEmployeeData();
     }
 
     public void connectDB() {
@@ -80,6 +82,8 @@ public class Employee extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table1 = new javax.swing.JTable();
         employeeCode = new javax.swing.JTextField();
         employeeName = new javax.swing.JTextField();
         bClose = new javax.swing.JButton();
@@ -99,6 +103,20 @@ public class Employee extends javax.swing.JFrame {
         bInsert = new javax.swing.JButton();
         bUpdate = new javax.swing.JButton();
         bDelete = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        table2 = new javax.swing.JTable();
+
+        table1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        table1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Code", "Name"
+            }
+        ));
+        table1.setEnabled(false);
+        jScrollPane1.setViewportView(table1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -188,13 +206,51 @@ public class Employee extends javax.swing.JFrame {
             }
         });
 
+        table2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        table2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Code", "Name", "Sex", "DCode", "DName", "Salary"
+            }
+        ));
+        table2.setEnabled(false);
+        jScrollPane2.setViewportView(table2);
+        if (table2.getColumnModel().getColumnCount() > 0) {
+            table2.getColumnModel().getColumn(0).setMinWidth(50);
+            table2.getColumnModel().getColumn(0).setPreferredWidth(50);
+            table2.getColumnModel().getColumn(0).setMaxWidth(50);
+            table2.getColumnModel().getColumn(2).setMinWidth(50);
+            table2.getColumnModel().getColumn(2).setPreferredWidth(50);
+            table2.getColumnModel().getColumn(2).setMaxWidth(50);
+            table2.getColumnModel().getColumn(3).setMinWidth(50);
+            table2.getColumnModel().getColumn(3).setPreferredWidth(50);
+            table2.getColumnModel().getColumn(3).setMaxWidth(50);
+            table2.getColumnModel().getColumn(5).setMinWidth(100);
+            table2.getColumnModel().getColumn(5).setPreferredWidth(100);
+            table2.getColumnModel().getColumn(5).setMaxWidth(100);
+        }
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(59, 59, 59)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(bNew)
+                        .addGap(18, 18, 18)
+                        .addComponent(bShow)
+                        .addGap(18, 18, 18)
+                        .addComponent(bInsert)
+                        .addGap(18, 18, 18)
+                        .addComponent(bUpdate)
+                        .addGap(18, 18, 18)
+                        .addComponent(bDelete)
+                        .addGap(44, 44, 44)
+                        .addComponent(bClose))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -217,21 +273,9 @@ public class Employee extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel6))
                             .addComponent(department, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(employeeCode, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(bNew)
-                        .addGap(18, 18, 18)
-                        .addComponent(bShow)
-                        .addGap(18, 18, 18)
-                        .addComponent(bInsert)
-                        .addGap(18, 18, 18)
-                        .addComponent(bUpdate)
-                        .addGap(18, 18, 18)
-                        .addComponent(bDelete)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
-                        .addComponent(bClose)
-                        .addGap(56, 56, 56))))
+                            .addComponent(employeeCode, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane2))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -259,24 +303,61 @@ public class Employee extends javax.swing.JFrame {
                     .addComponent(jLabel5)
                     .addComponent(salary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(bInsert)
                         .addComponent(bUpdate)
-                        .addComponent(bDelete))
+                        .addComponent(bDelete)
+                        .addComponent(bClose))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(bNew)
-                        .addComponent(bShow)
-                        .addComponent(bClose)))
-                .addGap(28, 28, 28))
+                        .addComponent(bShow)))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void bNew() {
+        employeeCode.setText(null);
+        employeeName.setText(null);
+        sexM.setSelected(true);
+        sexF.setSelected(false);
+        sexU.setSelected(false);
+        department.setSelectedIndex(0);
+        salary.setText(null);
+        employeeCode.requestFocus();
+    }
+
+    private void getEmployeeData() {
+        //((DefaultTableModel) table1.getModel()).setRowCount(0);
+        String sql = "select employeeCode,employeeName,sex,employee.departmentCode,department.departmentName,salary from employee inner join department on department.departmentCode = employee.departmentCode";
+        employeeCode.setText(null);
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()) {
+                Object[] rowData = {rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)};
+                ((DefaultTableModel) table2.getModel()).addRow(rowData);
+            }
+            rs.close();
+        } catch (SQLException ex) {
+        }
+    }
+
+    private int searchRowIndex(String code) {
+        for (int i = 0; i < table2.getRowCount(); i++) {
+            if (code.equals(table2.getValueAt(i, 0))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void departmentSelect() {
-        String sql = "select departmentCode, departmentName from department order by departmentCode";
+        String sql = "select departmentCode, departmentName from department";
         try {
             // รัน SQL Query
             ResultSet rs = statement.executeQuery(sql);
@@ -299,6 +380,7 @@ public class Employee extends javax.swing.JFrame {
     public void departmentCode() {
         selectedItem = (String) department.getSelectedItem();
         departmentCode = selectedItem.split(" ")[0];
+        departmentName = selectedItem.split(" ")[1];
     }
 
     public void sexSelect() {
@@ -309,17 +391,6 @@ public class Employee extends javax.swing.JFrame {
         } else if (sexU.isSelected()) {
             sex = "U";
         }
-    }
-
-    public void bNew() {
-        employeeCode.setText(null);
-        employeeName.setText(null);
-        sexM.setSelected(true);
-        sexF.setSelected(false);
-        sexU.setSelected(false);
-        department.setSelectedIndex(0);
-        salary.setText(null);
-        employeeCode.requestFocus();
     }
 
     private void bCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCloseActionPerformed
@@ -346,42 +417,64 @@ public class Employee extends javax.swing.JFrame {
     }//GEN-LAST:event_bShowActionPerformed
 
     private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
-        sexSelect();
-        departmentCode();
-        String sql = "insert into employee(employeeCode,employeeName,sex,departmentCode,salary) values ('" + employeeCode.getText() + "','" + employeeName.getText() + "','" + sex + "','" + departmentCode + "','" + salary.getText() + "')";
-        try {
-            statement.executeUpdate(sql);
-            JOptionPane.showMessageDialog(this, "บันทึกสำเร็จ");
-        } catch (SQLException ex) {
-            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "บันทึกไม่สำเร็จ");
+        if ("".equals(employeeCode.getText())) {
+            JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
+        } else {
+            sexSelect();
+            departmentCode();
+            String sql = "insert into employee(employeeCode,employeeName,sex,departmentCode,salary) values ('" + employeeCode.getText() + "','" + employeeName.getText() + "','" + sex + "','" + departmentCode + "','" + salary.getText() + "')";
+            try {
+                statement.executeUpdate(sql);
+                Object[] rowData = {employeeCode.getText(), employeeName.getText(), sex, departmentCode, departmentName, salary.getText()};
+                ((DefaultTableModel) table2.getModel()).addRow(rowData);
+                JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
+            } catch (SQLException ex) {
+                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
+            }
         }
     }//GEN-LAST:event_bInsertActionPerformed
 
     private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
-        sexSelect();
-        departmentCode();
-        String sql = "update employee set employeeName = '" + employeeName.getText() + "', sex = '" + sex + "' ,departmentCode = '" + departmentCode + "',salary = '" + salary.getText() + "' where employeeCode = '" + employeeCode.getText() + "'";
-        try {
-            statement.executeUpdate(sql);
-            JOptionPane.showMessageDialog(this, "อัพเดทสำเร็จ");
-        } catch (SQLException ex) {
-            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "อัพเดทไม่สำเร็จ");
+        if ("".equals(employeeCode.getText())) {
+            JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
+        } else {
+            sexSelect();
+            departmentCode();
+            String sql = "update employee set employeeName = '" + employeeName.getText() + "', sex = '" + sex + "' ,departmentCode = '" + departmentCode + "',salary = '" + salary.getText() + "' where employeeCode = '" + employeeCode.getText() + "'";
+            int row = searchRowIndex(employeeCode.getText());
+            try {
+                statement.executeUpdate(sql);
+                ((DefaultTableModel) table2.getModel()).setValueAt(employeeName.getText(), row, 1);
+                ((DefaultTableModel) table2.getModel()).setValueAt(sex, row, 2);
+                ((DefaultTableModel) table2.getModel()).setValueAt(departmentCode, row, 3);
+                ((DefaultTableModel) table2.getModel()).setValueAt(departmentName, row, 4);
+                ((DefaultTableModel) table2.getModel()).setValueAt(salary.getText(), row, 5);
+                JOptionPane.showMessageDialog(this, "Update สำเร็จ");
+            } catch (SQLException ex) {
+                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
+            }
         }
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
         if (JOptionPane.showConfirmDialog(this, "ลบหรือไม่ ?", "ยืนยัน", 0) == 0) {
-            String sql = "delete from employee where employeeCode = '" + employeeCode.getText() + "'";
-            try {
-                statement.executeUpdate(sql);
-                JOptionPane.showMessageDialog(this, "ลบสำเร็จ");
-            } catch (SQLException ex) {
-                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-                JOptionPane.showMessageDialog(this, "ลบไม่สำเร็จ");
+            if ("".equals(employeeCode.getText())) {
+                JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
+            } else {
+                String sql = "delete from employee where employeeCode = '" + employeeCode.getText() + "'";
+                int row = searchRowIndex(employeeCode.getText());
+                try {
+                    statement.executeUpdate(sql);
+                    ((DefaultTableModel) table2.getModel()).removeRow(row);
+                    JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
+                } catch (SQLException ex) {
+                    Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
+                }
+                bNew();
             }
-            bNew();
         }
     }//GEN-LAST:event_bDeleteActionPerformed
 
@@ -486,9 +579,13 @@ public class Employee extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField salary;
     private javax.swing.JRadioButton sexF;
     private javax.swing.JRadioButton sexM;
     private javax.swing.JRadioButton sexU;
+    private javax.swing.JTable table1;
+    private javax.swing.JTable table2;
     // End of variables declaration//GEN-END:variables
 }
