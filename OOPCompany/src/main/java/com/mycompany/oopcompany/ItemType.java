@@ -26,45 +26,14 @@ public class ItemType extends javax.swing.JFrame {
     /**
      * Creates new form ItemType
      */
-    Connection conn;
-    Statement statement;
+    DatabaseConnection dbConnection = new DatabaseConnection();
+    SetFont setFontMs = new SetFont();
 
     public ItemType() {
-        setFont();
-        connectDB();
+        setFontMs.setFont();
+        dbConnection.connectDB();
         initComponents();
         getItemtypeData();
-    }
-
-    public void connectDB() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Load driver error");
-        }
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/oop2567", "root", "12345678");
-            statement = conn.createStatement();
-        } catch (SQLException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("connect database error");
-        }
-    }
-
-    public void setFont() {
-        try {
-            //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // กำหนดฟอนต์พื้นฐานสำหรับแอปพลิเคชันทั้งหมด
-            Font newFont = new Font("Tahoma", Font.PLAIN, 14);
-//            UIManager.put("Button.font", newFont);
-            UIManager.put("Label.font", newFont);
-//            UIManager.put("TextField.font", newFont);
-            UIManager.put("JOptionPane.font", newFont);
-        } catch (Exception ex) {
-        }
     }
 
     /**
@@ -241,7 +210,7 @@ public class ItemType extends javax.swing.JFrame {
         String sql = "select * from itemtype";
         typeName.setText(null);
         try {
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = dbConnection.statement.executeQuery(sql);
             while (rs.next()) {
                 Object[] rowData = {rs.getString(1), rs.getString(2)};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
@@ -281,7 +250,7 @@ public class ItemType extends javax.swing.JFrame {
         } else {
             String sql = "insert into itemtype(typeCode,typeName) values ('" + typeCode.getText() + "','" + typeName.getText() + "')";
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 Object[] rowData = {typeCode.getText(), typeName.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
@@ -299,7 +268,7 @@ public class ItemType extends javax.swing.JFrame {
             String sql = "update itemtype set typeName = '" + typeName.getText() + "' where typeCode = '" + typeCode.getText() + "'";
             int row = searchRowIndex(typeCode.getText());
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(typeName.getText(), row, 1);
                 JOptionPane.showMessageDialog(this, "Update สำเร็จ");
             } catch (SQLException ex) {
@@ -317,7 +286,7 @@ public class ItemType extends javax.swing.JFrame {
                 String sql = "delete from itemtype where typeCode = '" + typeCode.getText() + "'";
                 int row = searchRowIndex(typeCode.getText());
                 try {
-                    statement.executeUpdate(sql);
+                    dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
                     JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
                 } catch (SQLException ex) {
@@ -333,7 +302,7 @@ public class ItemType extends javax.swing.JFrame {
             String sql = "select typeName from itemtype where typeCode = '" + typeCode.getText() + "'";
             typeName.setText(null);
             try {
-                ResultSet rs = statement.executeQuery(sql);
+                ResultSet rs = dbConnection.statement.executeQuery(sql);
                 while (rs.next()) {
 //                    departmentName.setText(rs.getString(1));
                     typeName.setText(rs.getString("typeName"));

@@ -26,45 +26,14 @@ public class Customer extends javax.swing.JFrame {
     /**
      * Creates new form Customer
      */
-    Connection conn;
-    Statement statement;
+    DatabaseConnection dbConnection = new DatabaseConnection();
+    SetFont setFontMs = new SetFont();
 
     public Customer() {
-        setFont();
-        connectDB();
+        setFontMs.setFont();
+        dbConnection.connectDB();
         initComponents();
         getCustomerData();
-    }
-
-    public void connectDB() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Load driver error");
-        }
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/oop2567", "root", "12345678");
-            statement = conn.createStatement();
-        } catch (SQLException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("connect database error");
-        }
-    }
-
-    public void setFont() {
-        try {
-            //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // กำหนดฟอนต์พื้นฐานสำหรับแอปพลิเคชันทั้งหมด
-            Font newFont = new Font("Tahoma", Font.PLAIN, 14);
-//            UIManager.put("Button.font", newFont);
-            UIManager.put("Label.font", newFont);
-//            UIManager.put("TextField.font", newFont);
-            UIManager.put("JOptionPane.font", newFont);
-        } catch (Exception ex) {
-        }
     }
 
     /**
@@ -251,7 +220,7 @@ public class Customer extends javax.swing.JFrame {
         String sql = "select * from customer";
         customerName.setText(null);
         try {
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = dbConnection.statement.executeQuery(sql);
             while (rs.next()) {
                 Object[] rowData = {rs.getString(1), rs.getString(2), rs.getString(3)};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
@@ -291,7 +260,7 @@ public class Customer extends javax.swing.JFrame {
         } else {
             String sql = "insert into customer(customerCode,customerName,address) values ('" + customerCode.getText() + "','" + customerName.getText() + "','" + address.getText() + "')";
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 Object[] rowData = {customerCode.getText(), customerName.getText(), address.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
@@ -309,7 +278,7 @@ public class Customer extends javax.swing.JFrame {
             String sql = "update customer set customerName = '" + customerName.getText() + "', address = '" + address.getText() + "' where customerCode = '" + customerCode.getText() + "'";
             int row = searchRowIndex(customerCode.getText());
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(customerName.getText(), row, 1);
                 ((DefaultTableModel) table1.getModel()).setValueAt(address.getText(), row, 2);
                 JOptionPane.showMessageDialog(this, "Update สำเร็จ");
@@ -328,7 +297,7 @@ public class Customer extends javax.swing.JFrame {
                 String sql = "delete from customer where customerCode = '" + customerCode.getText() + "'";
                 int row = searchRowIndex(customerCode.getText());
                 try {
-                    statement.executeUpdate(sql);
+                    dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
                     JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
                 } catch (SQLException ex) {
@@ -345,7 +314,7 @@ public class Customer extends javax.swing.JFrame {
             customerName.setText(null);
             address.setText(null);
             try {
-                ResultSet rs = statement.executeQuery(sql);
+                ResultSet rs = dbConnection.statement.executeQuery(sql);
                 while (rs.next()) {
                     customerName.setText(rs.getString("customerName"));
                     address.setText(rs.getString("address"));

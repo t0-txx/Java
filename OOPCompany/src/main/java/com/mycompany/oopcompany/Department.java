@@ -26,46 +26,15 @@ public class Department extends javax.swing.JFrame {
     /**
      * Creates new form OPCompany
      */
-    Connection conn;
-    Statement statement;
+    DatabaseConnection dbConnection = new DatabaseConnection();
+    SetFont setFontMs = new SetFont();
 
     public Department() {
-        setFont();
-        connectDB();
+        setFontMs.setFont();
+        dbConnection.connectDB();
         initComponents();
         bNew();
         getDepartmentData();
-    }
-
-    public void connectDB() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Load driver error");
-        }
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/oop2567", "root", "12345678");
-            statement = conn.createStatement();
-        } catch (SQLException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("connect database error");
-        }
-    }
-
-    public void setFont() {
-        try {
-            //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // กำหนดฟอนต์พื้นฐานสำหรับแอปพลิเคชันทั้งหมด
-            Font newFont = new Font("Tahoma", Font.PLAIN, 14);
-//            UIManager.put("Button.font", newFont);
-            UIManager.put("Label.font", newFont);
-//            UIManager.put("TextField.font", newFont);
-            UIManager.put("JOptionPane.font", newFont);
-        } catch (Exception ex) {
-        }
     }
 
     /**
@@ -242,7 +211,7 @@ public class Department extends javax.swing.JFrame {
         String sql = "select * from department";
         departmentName.setText(null);
         try {
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = dbConnection.statement.executeQuery(sql);
             while (rs.next()) {
                 Object[] rowData = {rs.getString(1), rs.getString(2)};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
@@ -283,7 +252,7 @@ public class Department extends javax.swing.JFrame {
             String sql = "update department set departmentName = '" + departmentName.getText() + "' where departmentCode = '" + departmentCode.getText() + "'";
             int row = searchRowIndex(departmentCode.getText());
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(departmentName.getText(), row, 1);
                 JOptionPane.showMessageDialog(this, "Update สำเร็จ");
             } catch (SQLException ex) {
@@ -301,7 +270,7 @@ public class Department extends javax.swing.JFrame {
                 String sql = "delete from department where departmentCode = '" + departmentCode.getText() + "'";
                 int row = searchRowIndex(departmentCode.getText());
                 try {
-                    statement.executeUpdate(sql);
+                    dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
                     JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
                 } catch (SQLException ex) {
@@ -319,7 +288,7 @@ public class Department extends javax.swing.JFrame {
         } else {
             String sql = "insert into department(departmentCode,departmentName) values ('" + departmentCode.getText() + "','" + departmentName.getText() + "')";
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 Object[] rowData = {departmentCode.getText(), departmentName.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
@@ -335,7 +304,7 @@ public class Department extends javax.swing.JFrame {
             String sql = "select departmentName from department where departmentCode = '" + departmentCode.getText() + "'";
             departmentName.setText(null);
             try {
-                ResultSet rs = statement.executeQuery(sql);
+                ResultSet rs = dbConnection.statement.executeQuery(sql);
                 while (rs.next()) {
 //                    departmentName.setText(rs.getString(1));
                     departmentName.setText(rs.getString("departmentName"));

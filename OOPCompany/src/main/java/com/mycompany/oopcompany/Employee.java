@@ -26,50 +26,19 @@ public class Employee extends javax.swing.JFrame {
     /**
      * Creates new form Employee
      */
-    Connection conn;
-    Statement statement;
+    DatabaseConnection dbConnection = new DatabaseConnection();
+    SetFont setFontMs = new SetFont();
     String sex = "";
     String selectedItem;
     String departmentCode, departmentName;
 
     public Employee() {
-        setFont();
-        connectDB();
+        setFontMs.setFont();
+        dbConnection.connectDB();
         initComponents();
         departmentSelect();
         sexM.setSelected(true);
         getEmployeeData();
-    }
-
-    public void connectDB() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Load driver error");
-        }
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/oop2567", "root", "12345678");
-            statement = conn.createStatement();
-        } catch (SQLException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("connect database error");
-        }
-    }
-
-    public void setFont() {
-        try {
-            //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // กำหนดฟอนต์พื้นฐานสำหรับแอปพลิเคชันทั้งหมด
-            Font newFont = new Font("Tahoma", Font.PLAIN, 14);
-//            UIManager.put("Button.font", newFont);
-            UIManager.put("Label.font", newFont);
-//            UIManager.put("TextField.font", newFont);
-            UIManager.put("JOptionPane.font", newFont);
-        } catch (Exception ex) {
-        }
     }
 
     /**
@@ -82,8 +51,6 @@ public class Employee extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        table1 = new javax.swing.JTable();
         employeeCode = new javax.swing.JTextField();
         employeeName = new javax.swing.JTextField();
         bClose = new javax.swing.JButton();
@@ -104,19 +71,7 @@ public class Employee extends javax.swing.JFrame {
         bUpdate = new javax.swing.JButton();
         bDelete = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        table2 = new javax.swing.JTable();
-
-        table1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        table1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Code", "Name"
-            }
-        ));
-        table1.setEnabled(false);
-        jScrollPane1.setViewportView(table1);
+        table1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -206,8 +161,8 @@ public class Employee extends javax.swing.JFrame {
             }
         });
 
-        table2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        table2.setModel(new javax.swing.table.DefaultTableModel(
+        table1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        table1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -215,21 +170,21 @@ public class Employee extends javax.swing.JFrame {
                 "Code", "Name", "Sex", "DCode", "DName", "Salary"
             }
         ));
-        table2.setEnabled(false);
-        jScrollPane2.setViewportView(table2);
-        if (table2.getColumnModel().getColumnCount() > 0) {
-            table2.getColumnModel().getColumn(0).setMinWidth(50);
-            table2.getColumnModel().getColumn(0).setPreferredWidth(50);
-            table2.getColumnModel().getColumn(0).setMaxWidth(50);
-            table2.getColumnModel().getColumn(2).setMinWidth(50);
-            table2.getColumnModel().getColumn(2).setPreferredWidth(50);
-            table2.getColumnModel().getColumn(2).setMaxWidth(50);
-            table2.getColumnModel().getColumn(3).setMinWidth(50);
-            table2.getColumnModel().getColumn(3).setPreferredWidth(50);
-            table2.getColumnModel().getColumn(3).setMaxWidth(50);
-            table2.getColumnModel().getColumn(5).setMinWidth(100);
-            table2.getColumnModel().getColumn(5).setPreferredWidth(100);
-            table2.getColumnModel().getColumn(5).setMaxWidth(100);
+        table1.setEnabled(false);
+        jScrollPane2.setViewportView(table1);
+        if (table1.getColumnModel().getColumnCount() > 0) {
+            table1.getColumnModel().getColumn(0).setMinWidth(50);
+            table1.getColumnModel().getColumn(0).setPreferredWidth(50);
+            table1.getColumnModel().getColumn(0).setMaxWidth(50);
+            table1.getColumnModel().getColumn(2).setMinWidth(50);
+            table1.getColumnModel().getColumn(2).setPreferredWidth(50);
+            table1.getColumnModel().getColumn(2).setMaxWidth(50);
+            table1.getColumnModel().getColumn(3).setMinWidth(50);
+            table1.getColumnModel().getColumn(3).setPreferredWidth(50);
+            table1.getColumnModel().getColumn(3).setMaxWidth(50);
+            table1.getColumnModel().getColumn(5).setMinWidth(100);
+            table1.getColumnModel().getColumn(5).setPreferredWidth(100);
+            table1.getColumnModel().getColumn(5).setMaxWidth(100);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -337,10 +292,10 @@ public class Employee extends javax.swing.JFrame {
         String sql = "select employeeCode,employeeName,sex,employee.departmentCode,department.departmentName,salary from employee inner join department on department.departmentCode = employee.departmentCode";
         employeeCode.setText(null);
         try {
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = dbConnection.statement.executeQuery(sql);
             while (rs.next()) {
                 Object[] rowData = {rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)};
-                ((DefaultTableModel) table2.getModel()).addRow(rowData);
+                ((DefaultTableModel) table1.getModel()).addRow(rowData);
             }
             rs.close();
         } catch (SQLException ex) {
@@ -348,8 +303,8 @@ public class Employee extends javax.swing.JFrame {
     }
 
     private int searchRowIndex(String code) {
-        for (int i = 0; i < table2.getRowCount(); i++) {
-            if (code.equals(table2.getValueAt(i, 0))) {
+        for (int i = 0; i < table1.getRowCount(); i++) {
+            if (code.equals(table1.getValueAt(i, 0))) {
                 return i;
             }
         }
@@ -360,7 +315,7 @@ public class Employee extends javax.swing.JFrame {
         String sql = "select departmentCode, departmentName from department";
         try {
             // รัน SQL Query
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = dbConnection.statement.executeQuery(sql);
 
             // ลูปดึงข้อมูลจาก ResultSet
             while (rs.next()) {
@@ -424,9 +379,9 @@ public class Employee extends javax.swing.JFrame {
             departmentCode();
             String sql = "insert into employee(employeeCode,employeeName,sex,departmentCode,salary) values ('" + employeeCode.getText() + "','" + employeeName.getText() + "','" + sex + "','" + departmentCode + "','" + salary.getText() + "')";
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 Object[] rowData = {employeeCode.getText(), employeeName.getText(), sex, departmentCode, departmentName, salary.getText()};
-                ((DefaultTableModel) table2.getModel()).addRow(rowData);
+                ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
             } catch (SQLException ex) {
                 Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
@@ -444,12 +399,12 @@ public class Employee extends javax.swing.JFrame {
             String sql = "update employee set employeeName = '" + employeeName.getText() + "', sex = '" + sex + "' ,departmentCode = '" + departmentCode + "',salary = '" + salary.getText() + "' where employeeCode = '" + employeeCode.getText() + "'";
             int row = searchRowIndex(employeeCode.getText());
             try {
-                statement.executeUpdate(sql);
-                ((DefaultTableModel) table2.getModel()).setValueAt(employeeName.getText(), row, 1);
-                ((DefaultTableModel) table2.getModel()).setValueAt(sex, row, 2);
-                ((DefaultTableModel) table2.getModel()).setValueAt(departmentCode, row, 3);
-                ((DefaultTableModel) table2.getModel()).setValueAt(departmentName, row, 4);
-                ((DefaultTableModel) table2.getModel()).setValueAt(salary.getText(), row, 5);
+                dbConnection.statement.executeUpdate(sql);
+                ((DefaultTableModel) table1.getModel()).setValueAt(employeeName.getText(), row, 1);
+                ((DefaultTableModel) table1.getModel()).setValueAt(sex, row, 2);
+                ((DefaultTableModel) table1.getModel()).setValueAt(departmentCode, row, 3);
+                ((DefaultTableModel) table1.getModel()).setValueAt(departmentName, row, 4);
+                ((DefaultTableModel) table1.getModel()).setValueAt(salary.getText(), row, 5);
                 JOptionPane.showMessageDialog(this, "Update สำเร็จ");
             } catch (SQLException ex) {
                 Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
@@ -466,8 +421,8 @@ public class Employee extends javax.swing.JFrame {
                 String sql = "delete from employee where employeeCode = '" + employeeCode.getText() + "'";
                 int row = searchRowIndex(employeeCode.getText());
                 try {
-                    statement.executeUpdate(sql);
-                    ((DefaultTableModel) table2.getModel()).removeRow(row);
+                    dbConnection.statement.executeUpdate(sql);
+                    ((DefaultTableModel) table1.getModel()).removeRow(row);
                     JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
                 } catch (SQLException ex) {
                     Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
@@ -488,7 +443,7 @@ public class Employee extends javax.swing.JFrame {
             department.setSelectedIndex(0);
             salary.setText(null);
             try {
-                ResultSet rs = statement.executeQuery(sql);
+                ResultSet rs = dbConnection.statement.executeQuery(sql);
                 while (rs.next()) {
                     employeeName.setText(rs.getString("employeeName"));
 
@@ -579,13 +534,11 @@ public class Employee extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField salary;
     private javax.swing.JRadioButton sexF;
     private javax.swing.JRadioButton sexM;
     private javax.swing.JRadioButton sexU;
     private javax.swing.JTable table1;
-    private javax.swing.JTable table2;
     // End of variables declaration//GEN-END:variables
 }

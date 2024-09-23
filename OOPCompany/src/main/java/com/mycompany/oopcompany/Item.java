@@ -26,48 +26,17 @@ public class Item extends javax.swing.JFrame {
     /**
      * Creates new form Item
      */
-    Connection conn;
-    Statement statement;
+    DatabaseConnection dbConnection = new DatabaseConnection();
+    SetFont setFontMs = new SetFont();
     String selectedItem;
     String itemtypeCode, itemtypeName;
 
     public Item() {
-        setFont();
-        connectDB();
+        setFontMs.setFont();
+        dbConnection.connectDB();
         initComponents();
         itemtypeSelect();
         getItemData();
-    }
-
-    public void connectDB() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Load driver error");
-        }
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/oop2567", "root", "12345678");
-            statement = conn.createStatement();
-        } catch (SQLException ex) {
-//            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("connect database error");
-        }
-    }
-
-    public void setFont() {
-        try {
-            //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // กำหนดฟอนต์พื้นฐานสำหรับแอปพลิเคชันทั้งหมด
-            Font newFont = new Font("Tahoma", Font.PLAIN, 14);
-//            UIManager.put("Button.font", newFont);
-            UIManager.put("Label.font", newFont);
-//            UIManager.put("TextField.font", newFont);
-            UIManager.put("JOptionPane.font", newFont);
-        } catch (Exception ex) {
-        }
     }
 
     /**
@@ -319,7 +288,7 @@ public class Item extends javax.swing.JFrame {
         String sql = "select itemCode,itemName,item.typeCode,itemtype.typeName,price,qty,price*qty from item inner join itemtype on itemtype.typeCode = item.typeCode";
         itemCode.setText(null);
         try {
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = dbConnection.statement.executeQuery(sql);
             while (rs.next()) {
                 Object[] rowData = {rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
@@ -353,7 +322,7 @@ public class Item extends javax.swing.JFrame {
         String sql = "select typeCode, typeName from itemtype";
         try {
             // รัน SQL Query
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = dbConnection.statement.executeQuery(sql);
 
             // ลูปดึงข้อมูลจาก ResultSet
             while (rs.next()) {
@@ -398,7 +367,7 @@ public class Item extends javax.swing.JFrame {
             itemtypeCode();
             String sql = "insert into item(itemCode,itemName,typeCode,price,qty) values ('" + itemCode.getText() + "','" + itemName.getText() + "','" + itemtypeCode + "','" + price.getText() + "','" + qty.getText() + "')";
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 Object[] rowData = {itemCode.getText(), itemName.getText(), itemtypeCode, itemtypeName, price.getText(), qty.getText(), amount.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
@@ -417,7 +386,7 @@ public class Item extends javax.swing.JFrame {
             String sql = "update item set itemName = '" + itemName.getText() + "', typeCode = '" + itemtypeCode + "', price = '" + price.getText() + "' , qty = '" + qty.getText() + "' where itemCode = '" + itemCode.getText() + "'";
             int row = searchRowIndex(itemCode.getText());
             try {
-                statement.executeUpdate(sql);
+                dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(itemName.getText(), row, 1);
                 ((DefaultTableModel) table1.getModel()).setValueAt(itemtypeCode, row, 2);
                 ((DefaultTableModel) table1.getModel()).setValueAt(itemtypeName, row, 3);
@@ -440,7 +409,7 @@ public class Item extends javax.swing.JFrame {
                 String sql = "delete from item where itemCode = '" + itemCode.getText() + "'";
                 int row = searchRowIndex(itemCode.getText());
                 try {
-                    statement.executeUpdate(sql);
+                    dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
                     JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
                 } catch (SQLException ex) {
@@ -459,7 +428,7 @@ public class Item extends javax.swing.JFrame {
             price.setText(null);
             qty.setText(null);
             try {
-                ResultSet rs = statement.executeQuery(sql);
+                ResultSet rs = dbConnection.statement.executeQuery(sql);
                 while (rs.next()) {
                     itemName.setText(rs.getString("itemName"));
 
