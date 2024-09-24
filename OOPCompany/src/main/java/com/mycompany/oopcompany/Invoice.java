@@ -4,12 +4,15 @@
  */
 package com.mycompany.oopcompany;
 
+import java.awt.Event;
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -36,7 +39,14 @@ public class Invoice extends javax.swing.JFrame {
         customerSelect();
         employeeSelect();
         itemSelect();
+        LocalDate currentDate = LocalDate.now();
+        invoiceDate.setText(currentDate.toString());
+        stock.setText(itemMap.get(itemCodeList.getSelectedItem()));
+        price.setText(itemMap2.get(itemCodeList.getSelectedItem()));
     }
+
+    HashMap<String, String> itemMap = new HashMap<>();
+    HashMap<String, String> itemMap2 = new HashMap<>();
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -154,6 +164,11 @@ public class Invoice extends javax.swing.JFrame {
         });
 
         invoiceNo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        invoiceNo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                invoiceNoKeyPressed(evt);
+            }
+        });
 
         employeeCode.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -292,7 +307,7 @@ public class Invoice extends javax.swing.JFrame {
                     .addComponent(jLabel8)
                     .addComponent(jLabel9)
                     .addComponent(jLabel10))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -378,7 +393,7 @@ public class Invoice extends javax.swing.JFrame {
                         .addComponent(jLabel4)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bNewItem)
                     .addComponent(bAddItem)
@@ -445,7 +460,7 @@ public class Invoice extends javax.swing.JFrame {
     }
 
     public void itemSelect() {
-        String sql = "select itemCode, itemName,qty from item";
+        String sql = "select itemCode, itemName,qty,price from item";
         try {
             // รัน SQL Query
             ResultSet rs = dbConnection.statement.executeQuery(sql);
@@ -457,26 +472,11 @@ public class Invoice extends javax.swing.JFrame {
                 String litemName = rs.getString("itemName");
                 // เพิ่ม departmentName ลงใน JComboBox
                 itemCodeList.addItem(litemCode + " " + litemName);
-
+                itemMap.put(litemCode + " " + litemName, rs.getString("qty"));
+                itemMap2.put(litemCode + " " + litemName, rs.getString("price"));
             }
             rs.close(); // ปิด ResultSet
-        } catch (SQLException ex) {
-            ex.printStackTrace(); // แสดงข้อผิดพลาดถ้ามีการเกิด SQLException
-        }
-    }
 
-    public void qtyitemSelect(String code) {
-        String sql = "select qty from item where itemCode = '" + code + "'";
-        try {
-            // รัน SQL Query
-            ResultSet rs = dbConnection.statement.executeQuery(sql);
-
-            // ลูปดึงข้อมูลจาก ResultSet
-            while (rs.next()) {
-                // ดึงค่าของ departmentName
-                stock.setText(rs.getString("qty"));
-            }
-            rs.close(); // ปิด ResultSet
         } catch (SQLException ex) {
             ex.printStackTrace(); // แสดงข้อผิดพลาดถ้ามีการเกิด SQLException
         }
@@ -560,7 +560,7 @@ public class Invoice extends javax.swing.JFrame {
         int row = searchRowIndex(itemCode.getText());
         if (row > -1) {
             ((DefaultTableModel) table.getModel()).setValueAt(litemName, row, 1);
-            ((DefaultTableModel) table.getModel()).setValueAt(price.getText(), row, 2);
+//            ((DefaultTableModel) table.getModel()).setValueAt(price.getText(), row, 2);
             ((DefaultTableModel) table.getModel()).setValueAt(qty.getText(), row, 3);
             ((DefaultTableModel) table.getModel()).setValueAt(amount.getText(), row, 4);
         } else {
@@ -573,7 +573,7 @@ public class Invoice extends javax.swing.JFrame {
             int row = searchRowIndex(itemCode.getText());
             if (row > -1) {
                 ((DefaultTableModel) table.getModel()).removeRow(row);
-                price.setText(null);
+//                price.setText(null);
                 qty.setText(null);
                 amount.setText(null);
                 JOptionPane.showMessageDialog(this, "ลบสำเร็จ");
@@ -599,13 +599,15 @@ public class Invoice extends javax.swing.JFrame {
         String itemCodeL = (String) itemCodeList.getSelectedItem();
         itemCode.setText(itemCodeL.split(" ")[0]);
         litemName = itemCodeL.split(" ")[1];
+        stock.setText(itemMap.get(itemCodeL));
+        price.setText(itemMap2.get(itemCodeL));
         int row = searchRowIndex(itemCode.getText());
         if (row > -1) {
-            price.setText(((DefaultTableModel) table.getModel()).getValueAt(row, 2).toString());
+//            price.setText(((DefaultTableModel) table.getModel()).getValueAt(row, 2).toString());
             qty.setText(((DefaultTableModel) table.getModel()).getValueAt(row, 3).toString());
             amount.setText(((DefaultTableModel) table.getModel()).getValueAt(row, 4).toString());
         } else {
-            price.setText(null);
+//            price.setText(null);
             qty.setText(null);
             amount.setText(null);
         }
@@ -618,6 +620,49 @@ public class Invoice extends javax.swing.JFrame {
     private void qtyKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_qtyKeyReleased
         calculate();
     }//GEN-LAST:event_qtyKeyReleased
+
+    private void invoiceNoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_invoiceNoKeyPressed
+        if (evt.getKeyCode() == Event.ENTER) {
+            String sql = "select invoiceDate,invoice.customerCode,customer.customerName,invoice.employeeCode,employee.employeeName from invoice join customer on customer.customerCode = invoice.customerCode join employee on employee.employeeCode = invoice.employeeCode  where invoiceNo = '" + invoiceNo.getText() + "'";
+//            customerName.setText(null);
+//            address.setText(null);
+            try {
+                ResultSet rs = dbConnection.statement.executeQuery(sql);
+                while (rs.next()) {
+                    invoiceDate.setText(rs.getString("invoiceDate"));
+                    customerCode.setText(rs.getString("invoice.customerCode"));
+                    
+                    String customerCode1 = rs.getString("invoice.customerCode");
+
+                    for (int i = 0; i < customerCodeList.getItemCount(); i++) {
+                        String item = (String) customerCodeList.getItemAt(i);
+                        if (item.startsWith(customerCode1 + " ")) {
+                            customerCodeList.setSelectedIndex(i);
+                            break;
+                        }
+                    }
+                    
+                    employeeCode.setText(rs.getString("invoice.employeeCode"));
+                    
+                    String employeeCode1 = rs.getString("invoice.employeeCode");
+
+                    for (int i = 0; i < employeeCodeList.getItemCount(); i++) {
+                        String item = (String) employeeCodeList.getItemAt(i);
+                        if (item.startsWith(employeeCode1 + " ")) {
+                            employeeCodeList.setSelectedIndex(i);
+                            break;
+                        }
+                    }
+                    
+                }
+                rs.close();
+
+            } catch (SQLException ex) {
+//                customerName.setText(null);
+//                address.setText(null);
+            }
+        }
+    }//GEN-LAST:event_invoiceNoKeyPressed
 
     /**
      * @param args the command line arguments
