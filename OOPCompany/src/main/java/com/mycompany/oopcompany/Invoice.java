@@ -31,6 +31,7 @@ public class Invoice extends javax.swing.JFrame {
     DatabaseConnection dbConnection = new DatabaseConnection();
     SetFont setFontMs = new SetFont();
     String lcustomerName, lemployeeName, litemName, lstock;
+    LocalDate currentDate = LocalDate.now();
 
     public Invoice() {
         setFontMs.setFont();
@@ -39,7 +40,6 @@ public class Invoice extends javax.swing.JFrame {
         customerSelect();
         employeeSelect();
         itemSelect();
-        LocalDate currentDate = LocalDate.now();
         invoiceDate.setText(currentDate.toString());
         stock.setText(itemMap.get(itemCodeList.getSelectedItem()));
         price.setText(itemMap2.get(itemCodeList.getSelectedItem()));
@@ -62,7 +62,6 @@ public class Invoice extends javax.swing.JFrame {
         bUpdate = new javax.swing.JButton();
         bDelete = new javax.swing.JButton();
         bNew = new javax.swing.JButton();
-        bShow = new javax.swing.JButton();
         customerCode = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         invoiceDate = new javax.swing.JTextField();
@@ -95,6 +94,11 @@ public class Invoice extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         bClose.setText("Close");
+        bClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bCloseActionPerformed(evt);
+            }
+        });
 
         bInsert.setText("Insert");
         bInsert.addActionListener(new java.awt.event.ActionListener() {
@@ -121,13 +125,6 @@ public class Invoice extends javax.swing.JFrame {
         bNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bNewActionPerformed(evt);
-            }
-        });
-
-        bShow.setText("Show");
-        bShow.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bShowActionPerformed(evt);
             }
         });
 
@@ -245,6 +242,11 @@ public class Invoice extends javax.swing.JFrame {
         jLabel8.setName(""); // NOI18N
 
         qty.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        qty.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                qtyFocusLost(evt);
+            }
+        });
         qty.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 qtyKeyReleased(evt);
@@ -325,19 +327,6 @@ public class Invoice extends javax.swing.JFrame {
                         .addComponent(bUpdateItem)
                         .addGap(18, 18, 18)
                         .addComponent(bDeleteItem))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(bNew)
-                        .addGap(18, 18, 18)
-                        .addComponent(bShow)
-                        .addGap(18, 18, 18)
-                        .addComponent(bInsert)
-                        .addGap(18, 18, 18)
-                        .addComponent(bUpdate)
-                        .addGap(18, 18, 18)
-                        .addComponent(bDelete)
-                        .addGap(32, 32, 32)
-                        .addComponent(bClose))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addGap(55, 55, 55)
@@ -365,7 +354,19 @@ public class Invoice extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addGap(28, 28, 28)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(bNew)
+                            .addGap(18, 18, 18)
+                            .addComponent(bInsert)
+                            .addGap(18, 18, 18)
+                            .addComponent(bUpdate)
+                            .addGap(18, 18, 18)
+                            .addComponent(bDelete)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(bClose))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -408,9 +409,7 @@ public class Invoice extends javax.swing.JFrame {
                         .addComponent(bUpdate)
                         .addComponent(bDelete)
                         .addComponent(bClose))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(bNew)
-                        .addComponent(bShow)))
+                    .addComponent(bNew))
                 .addGap(24, 24, 24))
         );
 
@@ -420,13 +419,15 @@ public class Invoice extends javax.swing.JFrame {
     public void customerSelect() {
         String sql = "select customerCode, customerName from customer";
         try {
+            customerCodeList.addItem(" กรุณาเลือกลูกค้า");
             // รัน SQL Query
             ResultSet rs = dbConnection.statement.executeQuery(sql);
 
             // ลูปดึงข้อมูลจาก ResultSet
             while (rs.next()) {
                 // ดึงค่าของ departmentName
-                String lcustomerCode = rs.getString("customerCode");
+                String formattedId = String.format("%06d", Integer.parseInt(rs.getString("customerCode")));
+                String lcustomerCode = formattedId;
                 String lcustomerName = rs.getString("customerName");
 
                 // เพิ่ม departmentName ลงใน JComboBox
@@ -441,6 +442,7 @@ public class Invoice extends javax.swing.JFrame {
     public void employeeSelect() {
         String sql = "select employeeCode, employeeName from employee";
         try {
+            employeeCodeList.addItem(" กรุณาเลือกพนักงาน");
             // รัน SQL Query
             ResultSet rs = dbConnection.statement.executeQuery(sql);
 
@@ -462,6 +464,7 @@ public class Invoice extends javax.swing.JFrame {
     public void itemSelect() {
         String sql = "select itemCode, itemName,qty,price from item";
         try {
+            itemCodeList.addItem(" กรุณาเลือกสินค้า");
             // รัน SQL Query
             ResultSet rs = dbConnection.statement.executeQuery(sql);
 
@@ -479,6 +482,32 @@ public class Invoice extends javax.swing.JFrame {
 
         } catch (SQLException ex) {
             ex.printStackTrace(); // แสดงข้อผิดพลาดถ้ามีการเกิด SQLException
+        }
+    }
+
+    public void QtyCount() {
+        try {
+            for (int i = 0; i < table.getRowCount(); i++) {
+                String sql = "update item set qty = qty+'" + table.getValueAt(i, 3) + "' where itemCode =  '" + table.getValueAt(i, 0) + "'";
+                System.out.println(sql);
+                dbConnection.statement.executeUpdate(sql);
+
+                String key = table.getValueAt(i, 0) + " " + table.getValueAt(i, 1);
+                if (itemMap.containsKey(key)) {
+                    int currentStock = Integer.parseInt(itemMap.get(key));  // ดึงค่าปัจจุบันของ stock
+                    int qtyToDeduct = Integer.parseInt(table.getValueAt(i, 3).toString());  // จำนวนที่ต้องการหักลบ
+
+                    int newStock = currentStock - qtyToDeduct;
+
+                    itemMap.put(key, String.valueOf(newStock));  // ใส่ค่าใหม่ที่ลดแล้วกลับลงใน itemMap
+                } else {
+                    System.out.println("Key not found in itemMap");
+                }
+            }
+            JOptionPane.showMessageDialog(this, "เพิ่มข้อมูล");
+        } catch (Exception ex) {
+            Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "ลบข้อมูล");
         }
     }
 
@@ -502,22 +531,47 @@ public class Invoice extends javax.swing.JFrame {
         }
     }
 
+    public void bNew() {
+        invoiceNo.setText(null);
+        invoiceDate.setText(currentDate.toString());
+        customerCode.setText(null);
+        customerCodeList.setSelectedIndex(0);
+        employeeCode.setText(null);
+        employeeCodeList.setSelectedIndex(0);
+        ((DefaultTableModel) table.getModel()).setRowCount(0);
+    }
+
     private void bInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInsertActionPerformed
-        if ("".equals(invoiceNo.getText())) {
+        if (invoiceNo.getText().trim().isEmpty() || customerCode.getText().trim().isEmpty() || employeeCode.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
         } else {
-            String sql = "insert into invoice values ('" + invoiceNo.getText() + "','" + invoiceDate.getText() + "','" + customerCode.getText() + "','" + employeeCode.getText() + "')";
+            String formattedId = String.format("%08d", Integer.parseInt(invoiceNo.getText()));
+            String sql = "insert into invoice values ('" + formattedId + "','" + invoiceDate.getText() + "','" + customerCode.getText() + "','" + employeeCode.getText() + "')";
             try {
 //                System.out.println(sql);
                 dbConnection.statement.executeUpdate(sql);
                 for (int i = 0; i < table.getRowCount(); i++) {
-                    sql = "insert into invoicedetail values ('" + invoiceNo.getText() + "','" + table.getValueAt(i, 0) + "','" + table.getValueAt(i, 2) + "','" + table.getValueAt(i, 3) + "')";
+                    sql = "insert into invoicedetail values ('" + formattedId + "','" + table.getValueAt(i, 0) + "','" + table.getValueAt(i, 2) + "','" + table.getValueAt(i, 3) + "')";
 //                    System.out.println(sql);
                     dbConnection.statement.executeUpdate(sql);
+
                     sql = "update item set qty = qty-'" + table.getValueAt(i, 3) + "' where itemCode =  '" + table.getValueAt(i, 0) + "'";
 //                    System.out.println(sql);
                     dbConnection.statement.executeUpdate(sql);
+
+                    String key = table.getValueAt(i, 0) + " " + table.getValueAt(i, 1);
+                    if (itemMap.containsKey(key)) {
+                        int currentStock = Integer.parseInt(itemMap.get(key));  // ดึงค่าปัจจุบันของ stock
+                        int qtyToDeduct = Integer.parseInt(table.getValueAt(i, 3).toString());  // จำนวนที่ต้องการหักลบ
+
+                        int newStock = currentStock - qtyToDeduct;
+
+                        itemMap.put(key, String.valueOf(newStock));  // ใส่ค่าใหม่ที่ลดแล้วกลับลงใน itemMap
+                    } else {
+                        System.out.println("Key not found in itemMap");
+                    }
                 }
+                bNewTable();
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
             } catch (Exception ex) {
                 Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
@@ -527,32 +581,142 @@ public class Invoice extends javax.swing.JFrame {
     }//GEN-LAST:event_bInsertActionPerformed
 
     private void bUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUpdateActionPerformed
+        if (invoiceNo.getText().trim().isEmpty() || customerCode.getText().trim().isEmpty() || employeeCode.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
+        } else {
+            String formattedId = String.format("%08d", Integer.parseInt(invoiceNo.getText()));
+            String sql = "update invoice set  invoiceDate = '" + invoiceDate.getText() + "',customerCode = '" + customerCode.getText() + "',employeeCode = '" + employeeCode.getText() + "' where invoiceNo = '" + formattedId + "'";
+            try {
+//                System.out.println(sql);
+                dbConnection.statement.executeUpdate(sql);
+                for (int i = 0; i < table.getRowCount(); i++) {
+                    String itemCode = table.getValueAt(i, 0).toString();
+                    int newQty = Integer.parseInt(table.getValueAt(i, 3).toString());
 
+                    // ตรวจสอบว่ามีรายการใน invoicedetail หรือไม่
+                    sql = "select qty from invoicedetail where itemCode = '" + itemCode + "' and invoiceNo = '" + formattedId + "'";
+//                    System.out.println("Executing: " + sql);
+                    ResultSet rs = dbConnection.statement.executeQuery(sql);
+                    int oldQty = 0;
+                    if (rs.next()) {
+                        oldQty = rs.getInt("qty"); // ดึงค่า qty เก่า
+
+                        // คืนค่า qty เก่ากลับเข้าไปใน item
+                        sql = "update item set qty = qty + " + oldQty + " where itemCode = '" + itemCode + "'";
+//                        System.out.println("Executing: " + sql);
+                        dbConnection.statement.executeUpdate(sql);
+
+                        // อัปเดต invoicedetail
+                        sql = "update invoicedetail set price = '" + table.getValueAt(i, 2) + "', qty = '" + newQty + "' where itemCode = '" + itemCode + "' and invoiceNo = '" + formattedId + "'";
+//                        System.out.println("Executing: " + sql);
+                        dbConnection.statement.executeUpdate(sql);
+                    } else {
+                        // ถ้าไม่มีรายการ -> แทรกข้อมูลใหม่
+                        sql = "insert into invoicedetail (invoiceNo, itemCode, price, qty) values ('" + formattedId + "', '" + itemCode + "', '" + table.getValueAt(i, 2) + "', '" + newQty + "')";
+//                        System.out.println("Executing: " + sql);
+                        dbConnection.statement.executeUpdate(sql);
+                    }
+
+                    // อัปเดตจำนวนสินค้าในตาราง item
+                    sql = "update item set qty = qty - " + newQty + " where itemCode = '" + itemCode + "'";
+//                    System.out.println("Executing: " + sql);
+                    dbConnection.statement.executeUpdate(sql);
+
+                    // อัปเดตข้อมูลใน itemMap
+                    String key = itemCode + " " + table.getValueAt(i, 1).toString();
+                    if (itemMap.containsKey(key)) {
+                        int currentStock = Integer.parseInt(itemMap.get(key));
+                        int newStock = currentStock - newQty + oldQty; // ปรับ stock ใหม่
+                        itemMap.put(key, String.valueOf(newStock));
+                    } else {
+                        System.out.println("Key not found in itemMap");
+                    }
+                }
+                bNewTable();
+                JOptionPane.showMessageDialog(this, "Update สำเร็จ");
+            } catch (Exception ex) {
+                Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
+            }
+        }
     }//GEN-LAST:event_bUpdateActionPerformed
 
     private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
+        if (JOptionPane.showConfirmDialog(this, "ลบหรือไม่ ?", "ยืนยัน", 0) == 0) {
+            if (invoiceNo.getText().trim().isEmpty() || customerCode.getText().trim().isEmpty() || employeeCode.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
+            } else {
+                String formattedId = String.format("%08d", Integer.parseInt(invoiceNo.getText()));
+                String sql = "delete from invoice where invoiceNo = '" + formattedId + "'";
+                try {
+//                    System.out.println(sql);
+                    dbConnection.statement.executeUpdate(sql);
+                    for (int i = 0; i < table.getRowCount(); i++) {
+                        String itemCode = table.getValueAt(i, 0).toString();
 
+                        // ดึงค่า qty ของสินค้าที่จะลบออกจาก invoicedetail
+                        sql = "select qty from invoicedetail where itemCode = '" + itemCode + "' and invoiceNo = '" + formattedId + "'";
+                        ResultSet rs = dbConnection.statement.executeQuery(sql);
+                        if (rs.next()) {
+                            int qtyToRestock = rs.getInt("qty");
+
+                            // คืนค่า stock ใน item
+                            sql = "update item set qty = qty + " + qtyToRestock + " where itemCode = '" + itemCode + "'";
+//                            System.out.println(sql);
+                            dbConnection.statement.executeUpdate(sql);
+
+                            // อัปเดต itemMap หลังจากคืนค่า stock
+                            String key = itemCode + " " + table.getValueAt(i, 1).toString(); // สร้าง key สำหรับ itemMap
+                            if (itemMap.containsKey(key)) {
+                                int currentStock = Integer.parseInt(itemMap.get(key));  // ดึง stock ปัจจุบันจาก itemMap
+                                int newStock = currentStock + qtyToRestock;  // คืนค่า stock ใหม่
+                                itemMap.put(key, String.valueOf(newStock));  // ใส่ค่าใหม่กลับลงใน itemMap
+                            } else {
+                                System.out.println("Key not found in itemMap");
+                            }
+                        }
+                        // ลบข้อมูลจาก invoicedetail
+                        sql = "delete from invoicedetail where itemCode = '" + itemCode + "' and invoiceNo = '" + formattedId + "'";
+                        System.out.println(sql);
+                        dbConnection.statement.executeUpdate(sql);
+                    }
+                    JOptionPane.showMessageDialog(this, "Delete สำเร็จ");
+                    bNew();
+                    bNewTable();
+                } catch (Exception ex) {
+                    Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
+                }
+            }
+        }
     }//GEN-LAST:event_bDeleteActionPerformed
 
     private void bNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNewActionPerformed
-
+        bNew();
+        bNewTable();
     }//GEN-LAST:event_bNewActionPerformed
 
-    private void bShowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bShowActionPerformed
-
-    }//GEN-LAST:event_bShowActionPerformed
+    public void bNewTable() {
+        itemCodeList.setSelectedIndex(0);
+        price.setText(null);
+        amount.setText(null);
+    }
 
     private void bNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNewItemActionPerformed
-
+        bNewTable();
     }//GEN-LAST:event_bNewItemActionPerformed
 
     private void bAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAddItemActionPerformed
-        int row = searchRowIndex(itemCode.getText());
-        if (row == -1) {
-            Object[] rowData = {itemCode.getText(), litemName, price.getText(), qty.getText(), amount.getText()};
-            ((DefaultTableModel) table.getModel()).addRow(rowData);
+        if ("".equals(itemCode.getText())) {
+            JOptionPane.showMessageDialog(this, "กรุณาเลือกสินค้า");
         } else {
-            JOptionPane.showMessageDialog(this, "มีสินค้าแล้ว");
+            int row = searchRowIndex(itemCode.getText());
+            if (row == -1) {
+                Object[] rowData = {itemCode.getText(), litemName, price.getText(), qty.getText(), amount.getText()};
+                ((DefaultTableModel) table.getModel()).addRow(rowData);
+            } else {
+                JOptionPane.showMessageDialog(this, "มีสินค้าแล้ว");
+            }
         }
     }//GEN-LAST:event_bAddItemActionPerformed
 
@@ -572,11 +736,44 @@ public class Invoice extends javax.swing.JFrame {
         if (JOptionPane.showConfirmDialog(this, "ลบหรือไม่ ?", "ยืนยัน", 0) == 0) {
             int row = searchRowIndex(itemCode.getText());
             if (row > -1) {
-                ((DefaultTableModel) table.getModel()).removeRow(row);
-//                price.setText(null);
-                qty.setText(null);
-                amount.setText(null);
-                JOptionPane.showMessageDialog(this, "ลบสำเร็จ");
+                String itemCodeToDelete = table.getValueAt(row, 0).toString(); // ดึง itemCode ที่จะลบ
+                String formattedId = String.format("%08d", Integer.parseInt(invoiceNo.getText()));
+
+                try {
+                    // ดึงจำนวนที่ต้องลบจาก invoicedetail
+                    String sql = "SELECT qty FROM invoicedetail WHERE itemCode = '" + itemCodeToDelete + "' AND invoiceNo = '" + formattedId + "'";
+                    ResultSet rs = dbConnection.statement.executeQuery(sql);
+                    int qtyToDelete = 0;
+                    if (rs.next()) {
+                        qtyToDelete = rs.getInt("qty"); // ดึง qty ที่ต้องลบ
+                    }
+
+                    // ลบข้อมูลจาก invoicedetail
+                    sql = "DELETE FROM invoicedetail WHERE itemCode = '" + itemCodeToDelete + "' AND invoiceNo = '" + formattedId + "'";
+                    dbConnection.statement.executeUpdate(sql);
+
+                    // เพิ่มสต็อกกลับเข้าไปใน item
+                    sql = "UPDATE item SET qty = qty + " + qtyToDelete + " WHERE itemCode = '" + itemCodeToDelete + "'";
+                    dbConnection.statement.executeUpdate(sql);
+
+                    // อัปเดตข้อมูลใน itemMap
+                    String keyDelete = itemCodeToDelete + " " + table.getValueAt(row, 1).toString();
+                    if (itemMap.containsKey(keyDelete)) {
+                        int currentStockDelete = Integer.parseInt(itemMap.get(keyDelete));
+                        itemMap.put(keyDelete, String.valueOf(currentStockDelete + qtyToDelete)); // เพิ่ม qty ที่ลบเข้าไป
+                    }
+
+                    // ลบแถวที่ถูกเลือกใน JTable
+                    ((DefaultTableModel) table.getModel()).removeRow(row);
+                    qty.setText(null);
+                    amount.setText(null);
+
+                    JOptionPane.showMessageDialog(this, "ลบสำเร็จ");
+                    bNewTable(); // อัปเดตข้อมูลใหม่ในตาราง
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "เกิดข้อผิดพลาดในการลบ: " + ex.getMessage());
+                }
             } else {
                 JOptionPane.showMessageDialog(this, "ลบไม่สำเร็จ");
             }
@@ -618,20 +815,77 @@ public class Invoice extends javax.swing.JFrame {
     }//GEN-LAST:event_priceKeyReleased
 
     private void qtyKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_qtyKeyReleased
+// ดึง itemCode จากตารางหรือ input
         calculate();
+        String itemCodeL = (String) itemCodeList.getSelectedItem();
+        itemCode.setText(itemCodeL.split(" ")[0]);
+        litemName = itemCodeL.split(" ")[1];
+        String itemCode1 = itemCode.getText();
+        String itemName = litemName; // ตรวจสอบว่า litemName ถูกตั้งค่าหรือไม่
+        String key = itemCode1 + " " + itemName;
+
+        // เช็คว่า itemMap มี item นี้อยู่หรือไม่
+        if (itemMap.containsKey(key)) {
+            // ดึงจำนวน qty ที่เหลือจาก itemMap
+            int availableQty = Integer.parseInt(itemMap.get(key));
+
+            // ดึงค่าที่ผู้ใช้กรอกเข้ามา
+            try {
+                int enteredQty = Integer.parseInt(qty.getText());
+
+                // ดึง oldQty จาก invoicedetail (หากมี)
+                String formattedId = String.format("%08d", Integer.parseInt(invoiceNo.getText()));
+                String sql = "SELECT qty FROM invoicedetail WHERE itemCode = '" + itemCode1 + "' AND invoiceNo = '" + formattedId + "'";
+                ResultSet rs = dbConnection.statement.executeQuery(sql);
+                int oldQty = 0; // กำหนดให้เป็น 0 หากไม่มีค่าก่อนหน้านี้
+                if (rs.next()) {
+                    oldQty = rs.getInt("qty"); // ดึง oldQty
+                }
+
+                // คำนวณค่ารวม
+                int totalQty = enteredQty - oldQty; // คำนวณค่ารวมโดยใช้ลบ oldQty ออกจาก enteredQty
+
+                // ถ้าจำนวนที่กรอกมากกว่าจำนวนที่มีในสต็อก
+                if (totalQty > availableQty) {
+                    JOptionPane.showMessageDialog(this, "จำนวนสินค้ามีไม่พอในสต็อก! คงเหลือ: " + (availableQty + oldQty));
+                    // รีเซ็ตค่าให้คงเหลือที่สามารถกรอกได้
+                    qty.setText(String.valueOf(availableQty + oldQty)); // รีเซ็ตเป็นจำนวนที่มี
+                    calculate();
+                } else if (enteredQty < 0) {
+                    // ถ้าจำนวนที่กรอกเป็นค่าติดลบ
+                    JOptionPane.showMessageDialog(this, "กรุณากรอกจำนวนที่ถูกต้อง (ไม่ให้เป็นค่าติดลบ)");
+                    qty.setText("0"); // รีเซ็ตให้เป็น 0
+                    calculate();
+                }
+            } catch (NumberFormatException e) {
+//                JOptionPane.showMessageDialog(this, "กรุณากรอกจำนวนที่ถูกต้อง");
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "เกิดข้อผิดพลาดในการดึงข้อมูล: " + e.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "ไม่พบสินค้าใน itemMap");
+        }
     }//GEN-LAST:event_qtyKeyReleased
 
     private void invoiceNoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_invoiceNoKeyPressed
         if (evt.getKeyCode() == Event.ENTER) {
-            String sql = "select invoiceDate,invoice.customerCode,customer.customerName,invoice.employeeCode,employee.employeeName from invoice join customer on customer.customerCode = invoice.customerCode join employee on employee.employeeCode = invoice.employeeCode  where invoiceNo = '" + invoiceNo.getText() + "'";
-//            customerName.setText(null);
-//            address.setText(null);
+            String formattedId = String.format("%08d", Integer.parseInt(invoiceNo.getText()));
+            String sql = "select invoiceDate,invoice.customerCode,invoice.employeeCode,invoicedetail.itemCode,item.itemName,invoicedetail.price,invoicedetail.qty,invoicedetail.price*invoicedetail.qty from invoice join customer on customer.customerCode = invoice.customerCode join employee on employee.employeeCode = invoice.employeeCode join invoicedetail on invoicedetail.invoiceNo = invoice.invoiceNo join item on item.itemCode = invoicedetail.itemCode where invoice.invoiceNo = '" + formattedId + "'";
+
+            invoiceDate.setText(currentDate.toString());
+            customerCode.setText(null);
+            customerCodeList.setSelectedIndex(0);
+            employeeCode.setText(null);
+            employeeCodeList.setSelectedIndex(0);
+            ((DefaultTableModel) table.getModel()).setRowCount(0);
+
             try {
                 ResultSet rs = dbConnection.statement.executeQuery(sql);
+
                 while (rs.next()) {
                     invoiceDate.setText(rs.getString("invoiceDate"));
                     customerCode.setText(rs.getString("invoice.customerCode"));
-                    
+
                     String customerCode1 = rs.getString("invoice.customerCode");
 
                     for (int i = 0; i < customerCodeList.getItemCount(); i++) {
@@ -641,9 +895,9 @@ public class Invoice extends javax.swing.JFrame {
                             break;
                         }
                     }
-                    
+
                     employeeCode.setText(rs.getString("invoice.employeeCode"));
-                    
+
                     String employeeCode1 = rs.getString("invoice.employeeCode");
 
                     for (int i = 0; i < employeeCodeList.getItemCount(); i++) {
@@ -653,16 +907,32 @@ public class Invoice extends javax.swing.JFrame {
                             break;
                         }
                     }
-                    
+
+                    Object[] rowData = {rs.getString("invoicedetail.itemCode"), rs.getString("item.itemName"), rs.getString("invoicedetail.price"), rs.getString("invoicedetail.qty"), rs.getString("invoicedetail.price*invoicedetail.qty")};
+                    ((DefaultTableModel) table.getModel()).addRow(rowData);
                 }
                 rs.close();
 
             } catch (SQLException ex) {
-//                customerName.setText(null);
-//                address.setText(null);
+                invoiceDate.setText(currentDate.toString());
+                customerCode.setText(null);
+                customerCodeList.setSelectedIndex(0);
+                employeeCode.setText(null);
+                employeeCodeList.setSelectedIndex(0);
+                ((DefaultTableModel) table.getModel()).setRowCount(0);
             }
         }
     }//GEN-LAST:event_invoiceNoKeyPressed
+
+    private void bCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCloseActionPerformed
+        if (JOptionPane.showConfirmDialog(this, "ปิดหรือไม่ ?", "ยืนยัน", 0) == 0) {
+            this.dispose();
+        }
+    }//GEN-LAST:event_bCloseActionPerformed
+
+    private void qtyFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_qtyFocusLost
+
+    }//GEN-LAST:event_qtyFocusLost
 
     /**
      * @param args the command line arguments
@@ -708,7 +978,6 @@ public class Invoice extends javax.swing.JFrame {
     private javax.swing.JButton bInsert;
     private javax.swing.JButton bNew;
     private javax.swing.JButton bNewItem;
-    private javax.swing.JButton bShow;
     private javax.swing.JButton bUpdate;
     private javax.swing.JButton bUpdateItem;
     private javax.swing.JTextField customerCode;

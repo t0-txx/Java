@@ -31,13 +31,23 @@ public class Menu extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         item = new javax.swing.JMenuItem();
+        itemType = new javax.swing.JMenuItem();
+        employee = new javax.swing.JMenuItem();
+        department = new javax.swing.JMenuItem();
+        customer = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        invoice = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jMenu1.setText("File");
+        jMenuBar1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jMenuBar1.setPreferredSize(new java.awt.Dimension(153, 40));
 
-        item.setText("item");
+        jMenu1.setText("จัดการข้อมูล");
+        jMenu1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        item.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        item.setText("สินค้า");
         item.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 itemActionPerformed(evt);
@@ -45,9 +55,56 @@ public class Menu extends javax.swing.JFrame {
         });
         jMenu1.add(item);
 
+        itemType.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        itemType.setText("ปรเภทสินค้า");
+        itemType.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemTypeActionPerformed(evt);
+            }
+        });
+        jMenu1.add(itemType);
+
+        employee.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        employee.setText("พนักงาน");
+        employee.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                employeeActionPerformed(evt);
+            }
+        });
+        jMenu1.add(employee);
+
+        department.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        department.setText("แผนก");
+        department.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                departmentActionPerformed(evt);
+            }
+        });
+        jMenu1.add(department);
+
+        customer.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        customer.setText("ลูกค้า");
+        customer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customerActionPerformed(evt);
+            }
+        });
+        jMenu1.add(customer);
+
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("ใบสั่งซื้อ");
+        jMenu2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        invoice.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        invoice.setText("ใบสั่งซื้อ");
+        invoice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                invoiceActionPerformed(evt);
+            }
+        });
+        jMenu2.add(invoice);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -56,11 +113,11 @@ public class Menu extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 500, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 277, Short.MAX_VALUE)
+            .addGap(0, 260, Short.MAX_VALUE)
         );
 
         pack();
@@ -71,6 +128,36 @@ public class Menu extends javax.swing.JFrame {
         item.setVisible(true);
         item.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }//GEN-LAST:event_itemActionPerformed
+
+    private void itemTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemTypeActionPerformed
+        ItemType itemType = new ItemType();
+        itemType.setVisible(true);
+        itemType.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }//GEN-LAST:event_itemTypeActionPerformed
+
+    private void employeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeActionPerformed
+        Employee employee = new Employee();
+        employee.setVisible(true);
+        employee.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }//GEN-LAST:event_employeeActionPerformed
+
+    private void departmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_departmentActionPerformed
+        Department department = new Department();
+        department.setVisible(true);
+        department.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }//GEN-LAST:event_departmentActionPerformed
+
+    private void customerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerActionPerformed
+        Customer customer = new Customer();
+        customer.setVisible(true);
+        customer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }//GEN-LAST:event_customerActionPerformed
+
+    private void invoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_invoiceActionPerformed
+        Invoice invoice = new Invoice();
+        invoice.setVisible(true);
+        invoice.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }//GEN-LAST:event_invoiceActionPerformed
 
     /**
      * @param args the command line arguments
@@ -108,7 +195,12 @@ public class Menu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem customer;
+    private javax.swing.JMenuItem department;
+    private javax.swing.JMenuItem employee;
+    private javax.swing.JMenuItem invoice;
     private javax.swing.JMenuItem item;
+    private javax.swing.JMenuItem itemType;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;

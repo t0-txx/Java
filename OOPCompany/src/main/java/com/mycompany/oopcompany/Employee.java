@@ -314,6 +314,7 @@ public class Employee extends javax.swing.JFrame {
     public void departmentSelect() {
         String sql = "select departmentCode, departmentName from department";
         try {
+            department.addItem(" กรุณาเลือกแผนก");
             // รัน SQL Query
             ResultSet rs = dbConnection.statement.executeQuery(sql);
 
@@ -377,10 +378,11 @@ public class Employee extends javax.swing.JFrame {
         } else {
             sexSelect();
             departmentCode();
-            String sql = "insert into employee(employeeCode,employeeName,sex,departmentCode,salary) values ('" + employeeCode.getText() + "','" + employeeName.getText() + "','" + sex + "','" + departmentCode + "','" + salary.getText() + "')";
+            String formattedId = String.format("%04d", Integer.parseInt(employeeCode.getText()));
+            String sql = "insert into employee(employeeCode,employeeName,sex,departmentCode,salary) values ('" + formattedId + "','" + employeeName.getText() + "','" + sex + "','" + departmentCode + "','" + salary.getText() + "')";
             try {
                 dbConnection.statement.executeUpdate(sql);
-                Object[] rowData = {employeeCode.getText(), employeeName.getText(), sex, departmentCode, departmentName, salary.getText()};
+                Object[] rowData = {formattedId, employeeName.getText(), sex, departmentCode, departmentName, salary.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
             } catch (SQLException ex) {
@@ -396,8 +398,9 @@ public class Employee extends javax.swing.JFrame {
         } else {
             sexSelect();
             departmentCode();
-            String sql = "update employee set employeeName = '" + employeeName.getText() + "', sex = '" + sex + "' ,departmentCode = '" + departmentCode + "',salary = '" + salary.getText() + "' where employeeCode = '" + employeeCode.getText() + "'";
-            int row = searchRowIndex(employeeCode.getText());
+            String formattedId = String.format("%04d", Integer.parseInt(employeeCode.getText()));
+            String sql = "update employee set employeeName = '" + employeeName.getText() + "', sex = '" + sex + "' ,departmentCode = '" + departmentCode + "',salary = '" + salary.getText() + "' where employeeCode = '" + formattedId + "'";
+            int row = searchRowIndex(formattedId);
             try {
                 dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(employeeName.getText(), row, 1);
@@ -418,8 +421,9 @@ public class Employee extends javax.swing.JFrame {
             if ("".equals(employeeCode.getText())) {
                 JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
             } else {
-                String sql = "delete from employee where employeeCode = '" + employeeCode.getText() + "'";
-                int row = searchRowIndex(employeeCode.getText());
+                String formattedId = String.format("%04d", Integer.parseInt(employeeCode.getText()));
+                String sql = "delete from employee where employeeCode = '" + formattedId + "'";
+                int row = searchRowIndex(formattedId);
                 try {
                     dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
@@ -428,14 +432,15 @@ public class Employee extends javax.swing.JFrame {
                     Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
                     JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
                 }
-                bNew();
+//                bNew();
             }
         }
     }//GEN-LAST:event_bDeleteActionPerformed
 
     private void employeeCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_employeeCodeKeyPressed
         if (evt.getKeyCode() == Event.ENTER) {
-            String sql = "select employeeName,departmentCode,sex,salary from employee where employeeCode = '" + employeeCode.getText() + "'";
+            String formattedId = String.format("%04d", Integer.parseInt(employeeCode.getText()));
+            String sql = "select employeeName,departmentCode,sex,salary from employee where employeeCode = '" + formattedId + "'";
             employeeName.setText(null);
             sexM.setSelected(true);
             sexF.setSelected(false);

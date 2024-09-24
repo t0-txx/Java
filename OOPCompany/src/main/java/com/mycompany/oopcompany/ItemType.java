@@ -248,10 +248,11 @@ public class ItemType extends javax.swing.JFrame {
         if ("".equals(typeCode.getText())) {
             JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
         } else {
-            String sql = "insert into itemtype(typeCode,typeName) values ('" + typeCode.getText() + "','" + typeName.getText() + "')";
+            String formattedId = String.format("%02d", Integer.parseInt(typeCode.getText()));
+            String sql = "insert into itemtype(typeCode,typeName) values ('" + formattedId + "','" + typeName.getText() + "')";
             try {
                 dbConnection.statement.executeUpdate(sql);
-                Object[] rowData = {typeCode.getText(), typeName.getText()};
+                Object[] rowData = {formattedId, typeName.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
             } catch (SQLException ex) {
@@ -265,8 +266,9 @@ public class ItemType extends javax.swing.JFrame {
         if ("".equals(typeCode.getText())) {
             JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
         } else {
-            String sql = "update itemtype set typeName = '" + typeName.getText() + "' where typeCode = '" + typeCode.getText() + "'";
-            int row = searchRowIndex(typeCode.getText());
+            String formattedId = String.format("%02d", Integer.parseInt(typeCode.getText()));
+            String sql = "update itemtype set typeName = '" + typeName.getText() + "' where typeCode = '" + formattedId + "'";
+            int row = searchRowIndex(formattedId);
             try {
                 dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(typeName.getText(), row, 1);
@@ -283,8 +285,9 @@ public class ItemType extends javax.swing.JFrame {
             if ("".equals(typeCode.getText())) {
                 JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
             } else {
-                String sql = "delete from itemtype where typeCode = '" + typeCode.getText() + "'";
-                int row = searchRowIndex(typeCode.getText());
+                String formattedId = String.format("%02d", Integer.parseInt(typeCode.getText()));
+                String sql = "delete from itemtype where typeCode = '" + formattedId + "'";
+                int row = searchRowIndex(formattedId);
                 try {
                     dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
@@ -294,12 +297,14 @@ public class ItemType extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
                 }
             }
+//            bNew();
         }
     }//GEN-LAST:event_bDeleteActionPerformed
 
     private void typeCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_typeCodeKeyPressed
         if (evt.getKeyCode() == Event.ENTER) {
-            String sql = "select typeName from itemtype where typeCode = '" + typeCode.getText() + "'";
+            String formattedId = String.format("%02d", Integer.parseInt(typeCode.getText()));
+            String sql = "select typeName from itemtype where typeCode = '" + formattedId + "'";
             typeName.setText(null);
             try {
                 ResultSet rs = dbConnection.statement.executeQuery(sql);
@@ -308,7 +313,6 @@ public class ItemType extends javax.swing.JFrame {
                     typeName.setText(rs.getString("typeName"));
                 }
                 rs.close();
-
             } catch (SQLException ex) {
                 typeName.setText(null);
             }

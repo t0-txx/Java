@@ -249,8 +249,9 @@ public class Department extends javax.swing.JFrame {
         if ("".equals(departmentCode.getText())) {
             JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
         } else {
-            String sql = "update department set departmentName = '" + departmentName.getText() + "' where departmentCode = '" + departmentCode.getText() + "'";
-            int row = searchRowIndex(departmentCode.getText());
+            String formattedId = String.format("%02d", Integer.parseInt(departmentCode.getText()));
+            String sql = "update department set departmentName = '" + departmentName.getText() + "' where departmentCode = '" + formattedId + "'";
+            int row = searchRowIndex(formattedId);
             try {
                 dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(departmentName.getText(), row, 1);
@@ -267,8 +268,9 @@ public class Department extends javax.swing.JFrame {
             if ("".equals(departmentCode.getText())) {
                 JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
             } else {
-                String sql = "delete from department where departmentCode = '" + departmentCode.getText() + "'";
-                int row = searchRowIndex(departmentCode.getText());
+                String formattedId = String.format("%02d", Integer.parseInt(departmentCode.getText()));
+                String sql = "delete from department where departmentCode = '" + formattedId + "'";
+                int row = searchRowIndex(formattedId);
                 try {
                     dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
@@ -277,8 +279,8 @@ public class Department extends javax.swing.JFrame {
                     Logger.getLogger(Department.class.getName()).log(Level.SEVERE, null, ex);
                     JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
                 }
-                bNew();
             }
+//            bNew();
         }
     }//GEN-LAST:event_bDeleteActionPerformed
 
@@ -286,10 +288,11 @@ public class Department extends javax.swing.JFrame {
         if ("".equals(departmentCode.getText())) {
             JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
         } else {
-            String sql = "insert into department(departmentCode,departmentName) values ('" + departmentCode.getText() + "','" + departmentName.getText() + "')";
+            String formattedId = String.format("%02d", Integer.parseInt(departmentCode.getText()));
+            String sql = "insert into department(departmentCode,departmentName) values ('" + formattedId + "','" + departmentName.getText() + "')";
             try {
                 dbConnection.statement.executeUpdate(sql);
-                Object[] rowData = {departmentCode.getText(), departmentName.getText()};
+                Object[] rowData = {formattedId, departmentName.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
             } catch (SQLException ex) {
@@ -301,7 +304,8 @@ public class Department extends javax.swing.JFrame {
 
     private void departmentCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_departmentCodeKeyPressed
         if (evt.getKeyCode() == Event.ENTER) {
-            String sql = "select departmentName from department where departmentCode = '" + departmentCode.getText() + "'";
+            String formattedId = String.format("%02d", Integer.parseInt(departmentCode.getText()));
+            String sql = "select departmentName from department where departmentCode = '" + formattedId + "'";
             departmentName.setText(null);
             try {
                 ResultSet rs = dbConnection.statement.executeQuery(sql);

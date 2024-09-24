@@ -222,7 +222,8 @@ public class Customer extends javax.swing.JFrame {
         try {
             ResultSet rs = dbConnection.statement.executeQuery(sql);
             while (rs.next()) {
-                Object[] rowData = {rs.getString(1), rs.getString(2), rs.getString(3)};
+                String formattedId = String.format("%06d", Integer.parseInt(rs.getString(1)));
+                Object[] rowData = {formattedId, rs.getString(2), rs.getString(3)};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
             }
             rs.close();
@@ -258,10 +259,11 @@ public class Customer extends javax.swing.JFrame {
         if ("".equals(customerCode.getText())) {
             JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
         } else {
-            String sql = "insert into customer(customerCode,customerName,address) values ('" + customerCode.getText() + "','" + customerName.getText() + "','" + address.getText() + "')";
+            String formattedId = String.format("%06d", Integer.parseInt(customerCode.getText()));
+            String sql = "insert into customer(customerCode,customerName,address) values ('" + formattedId + "','" + customerName.getText() + "','" + address.getText() + "')";
             try {
                 dbConnection.statement.executeUpdate(sql);
-                Object[] rowData = {customerCode.getText(), customerName.getText(), address.getText()};
+                Object[] rowData = {formattedId, customerName.getText(), address.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
             } catch (SQLException ex) {
@@ -275,8 +277,9 @@ public class Customer extends javax.swing.JFrame {
         if ("".equals(customerCode.getText())) {
             JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
         } else {
-            String sql = "update customer set customerName = '" + customerName.getText() + "', address = '" + address.getText() + "' where customerCode = '" + customerCode.getText() + "'";
-            int row = searchRowIndex(customerCode.getText());
+            String formattedId = String.format("%06d", Integer.parseInt(customerCode.getText()));
+            String sql = "update customer set customerName = '" + customerName.getText() + "', address = '" + address.getText() + "' where customerCode = '" + formattedId + "'";
+            int row = searchRowIndex(formattedId);
             try {
                 dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(customerName.getText(), row, 1);
@@ -294,8 +297,9 @@ public class Customer extends javax.swing.JFrame {
             if ("".equals(customerCode.getText())) {
                 JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
             } else {
-                String sql = "delete from customer where customerCode = '" + customerCode.getText() + "'";
-                int row = searchRowIndex(customerCode.getText());
+                String formattedId = String.format("%06d", Integer.parseInt(customerCode.getText()));
+                String sql = "delete from customer where customerCode = '" + formattedId + "'";
+                int row = searchRowIndex(formattedId);
                 try {
                     dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
@@ -305,12 +309,14 @@ public class Customer extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
                 }
             }
+//            bNew();
         }
     }//GEN-LAST:event_bDeleteActionPerformed
 
     private void customerCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_customerCodeKeyPressed
         if (evt.getKeyCode() == Event.ENTER) {
-            String sql = "select customerName,	address from customer where customerCode = '" + customerCode.getText() + "'";
+            String formattedId = String.format("%06d", Integer.parseInt(customerCode.getText()));
+            String sql = "select customerName,	address from customer where customerCode = '" + formattedId + "'";
             customerName.setText(null);
             address.setText(null);
             try {

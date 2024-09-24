@@ -321,14 +321,16 @@ public class Item extends javax.swing.JFrame {
     public void itemtypeSelect() {
         String sql = "select typeCode, typeName from itemtype";
         try {
+            itemType.addItem(" กรุณาเลือกปรเภท");
             // รัน SQL Query
             ResultSet rs = dbConnection.statement.executeQuery(sql);
 
             // ลูปดึงข้อมูลจาก ResultSet
             while (rs.next()) {
                 // ดึงค่าของ departmentName
-                String itemtypeCode1 = rs.getString("typeCode");
-                String typeName = rs.getString("typeName");
+                String formattedId = String.format("%02d", Integer.parseInt(rs.getString("typeCode")));
+                String itemtypeCode1 = formattedId;
+                String typeName = rs.getString( "typeName");
 
                 // เพิ่ม departmentName ลงใน JComboBox
                 itemType.addItem(itemtypeCode1 + " " + typeName);
@@ -365,10 +367,11 @@ public class Item extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Insert ไม่สำเร็จ");
         } else {
             itemtypeCode();
-            String sql = "insert into item(itemCode,itemName,typeCode,price,qty) values ('" + itemCode.getText() + "','" + itemName.getText() + "','" + itemtypeCode + "','" + price.getText() + "','" + qty.getText() + "')";
+            String formattedId = String.format("%04d", Integer.parseInt(itemCode.getText()));
+            String sql = "insert into item(itemCode,itemName,typeCode,price,qty) values ('" + formattedId + "','" + itemName.getText() + "','" + itemtypeCode + "','" + price.getText() + "','" + qty.getText() + "')";
             try {
                 dbConnection.statement.executeUpdate(sql);
-                Object[] rowData = {itemCode.getText(), itemName.getText(), itemtypeCode, itemtypeName, price.getText(), qty.getText(), amount.getText()};
+                Object[] rowData = {formattedId, itemName.getText(), itemtypeCode, itemtypeName, price.getText(), qty.getText(), amount.getText()};
                 ((DefaultTableModel) table1.getModel()).addRow(rowData);
                 JOptionPane.showMessageDialog(this, "Insert สำเร็จ");
             } catch (SQLException ex) {
@@ -383,8 +386,9 @@ public class Item extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Update ไม่สำเร็จ");
         } else {
             itemtypeCode();
-            String sql = "update item set itemName = '" + itemName.getText() + "', typeCode = '" + itemtypeCode + "', price = '" + price.getText() + "' , qty = '" + qty.getText() + "' where itemCode = '" + itemCode.getText() + "'";
-            int row = searchRowIndex(itemCode.getText());
+            String formattedId = String.format("%04d", Integer.parseInt(itemCode.getText()));
+            String sql = "update item set itemName = '" + itemName.getText() + "', typeCode = '" + itemtypeCode + "', price = '" + price.getText() + "' , qty = '" + qty.getText() + "' where itemCode = '" + formattedId + "'";
+            int row = searchRowIndex(formattedId);
             try {
                 dbConnection.statement.executeUpdate(sql);
                 ((DefaultTableModel) table1.getModel()).setValueAt(itemName.getText(), row, 1);
@@ -406,8 +410,9 @@ public class Item extends javax.swing.JFrame {
             if ("".equals(itemCode.getText())) {
                 JOptionPane.showMessageDialog(this, "Delete ไม่สำเร็จ");
             } else {
-                String sql = "delete from item where itemCode = '" + itemCode.getText() + "'";
-                int row = searchRowIndex(itemCode.getText());
+                String formattedId = String.format("%04d", Integer.parseInt(itemCode.getText()));
+                String sql = "delete from item where itemCode = '" + formattedId + "'";
+                int row = searchRowIndex(formattedId);
                 try {
                     dbConnection.statement.executeUpdate(sql);
                     ((DefaultTableModel) table1.getModel()).removeRow(row);
@@ -422,7 +427,8 @@ public class Item extends javax.swing.JFrame {
 
     private void itemCodeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_itemCodeKeyPressed
         if (evt.getKeyCode() == Event.ENTER) {
-            String sql = "select itemName,typeCode,price,qty from item where itemCode = '" + itemCode.getText() + "'";
+            String formattedId = String.format("%04d", Integer.parseInt(itemCode.getText()));
+            String sql = "select itemName,typeCode,price,qty from item where itemCode = '" + formattedId + "'";
             itemName.setText(null);
             itemType.setSelectedIndex(0);
             price.setText(null);
