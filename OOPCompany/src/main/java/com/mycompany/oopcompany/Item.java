@@ -321,7 +321,7 @@ public class Item extends javax.swing.JFrame {
     public void itemtypeSelect() {
         String sql = "select typeCode, typeName from itemtype";
         try {
-            itemType.addItem(" กรุณาเลือกปรเภท");
+            itemType.addItem(" กรุณาเลือกประเภท");
             // รัน SQL Query
             ResultSet rs = dbConnection.statement.executeQuery(sql);
 
